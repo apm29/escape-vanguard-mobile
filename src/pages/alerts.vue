@@ -71,7 +71,7 @@ function closeAlertModal(alert: AlertVO) {
   showAlertModal.value = false
   selectedAlert.value = null
   alertStore.setAlert(alert)
-  router.push('/alert/info')
+  router.push('/alert')
 }
 
 // 格式化时间

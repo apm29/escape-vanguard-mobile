@@ -52,100 +52,19 @@ function getStatusText(level: AlertLevelEnum) {
       return '警报'
   }
 }
-
-// 计算距离（模拟数据）
-function getDistance() {
-  if (!alert.value)
-    return '2km'
-  // 这里可以根据用户位置和避难所位置计算实际距离
-  return '2.5km'
-}
-
-// 计算步行时间（模拟数据）
-function getWalkingTime() {
-  if (!alert.value)
-    return '20mins'
-  // 这里可以根据距离计算实际步行时间
-  return '15分钟'
-}
-
-// 计算容量（模拟数据）
-function getCapacity() {
-  if (!alert.value)
-    return 3000
-  // 这里可以根据避难所实际容量返回
-  return 2500
-}
-
-// 计算剩余容量（模拟数据）
-function getRemainingCapacity() {
-  if (!alert.value)
-    return 1700
-  // 这里可以根据避难所实际剩余容量返回
-  return 1800
-}
-
-// 获取设施列表
-function getFacilities() {
-  if (!alert.value)
-    return ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']
-
-  // 根据警报类型返回相关设施
-  const facilitiesMap = {
-    [AlertLevelEnum.LOW]: ['洪涝', '台风', '地震'],
-    [AlertLevelEnum.MEDIUM]: ['洪涝', '台风', '地震', '山火'],
-    [AlertLevelEnum.HIGH]: ['洪涝', '台风', '地震', '山火', '人为事件', '公共卫生'],
-  }
-
-  return facilitiesMap[alert.value.level] || ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']
-}
-
-// 获取附近避难所
-function getNearbyShelters() {
-  if (!alert.value) {
-    return [
-      { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-      { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-      { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-    ]
-  }
-
-  // 根据警报等级返回不同的避难所
-  const sheltersMap = {
-    [AlertLevelEnum.LOW]: [
-      { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-      { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-    ],
-    [AlertLevelEnum.MEDIUM]: [
-      { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-      { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-      { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-    ],
-    [AlertLevelEnum.HIGH]: [
-      { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-      { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-      { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-      { name: '市中心体育馆', type: 'stadium', distance: '5km', highlighted: false },
-    ],
-  }
-
-  return sheltersMap[alert.value.level] || [
-    { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-    { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-    { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-  ]
-}
 </script>
 
 <template>
   <div v-if="alert">
     <!-- 头部警报栏 -->
     <div class="alert-header" :class="getHeaderClass(alert.level)">
-      <div class="alert-left">
-        <i class="alert-icon">⚠</i>
-        <span class="alert-text">警报: {{ alert.name }}</span>
+      <div class="alert-icon">
+        <div class="i-carbon:warning-alt" />
       </div>
-      <span class="menu-dots">⋯</span>
+      <span class="warning">警报: {{ alert.name }}</span>
+      <div class="menu-dots">
+        <div class="i-carbon:menu" />
+      </div>
     </div>
 
     <!-- 避难场所信息主区域 -->
@@ -360,7 +279,7 @@ function getNearbyShelters() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 15px;
   color: white;
   font-size: 14px;
 }
@@ -383,17 +302,8 @@ function getNearbyShelters() {
   gap: 8px;
 }
 
-.alert-icon {
-  font-size: 16px;
-}
-
 .alert-text {
   font-weight: 500;
-}
-
-.menu-dots {
-  font-size: 18px;
-  cursor: pointer;
 }
 
 /* 避难场所信息容器 */

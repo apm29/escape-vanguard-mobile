@@ -37,7 +37,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 1,
             title: '河流水位监测',
-            img: '/images/flood-low.jpg',
+            img: 'https://images.unsplash.com/photo-1604275689235-fdc521556c16?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             content: '当前河流水位正常，但需要持续关注',
             comments: 5,
             shares: 2,
@@ -82,7 +82,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 2,
             title: '洪水预警通知',
-            img: '/images/flood-medium.jpg',
+            img: 'https://images.unsplash.com/photo-1534862262637-373c120dcbcc?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             content: '请低洼地区居民做好防护准备',
             comments: 12,
             shares: 8,
@@ -90,7 +90,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 3,
             title: '救援物资准备',
-            img: '/images/rescue-supplies.jpg',
+            img: 'https://images.unsplash.com/photo-1716016435588-f5db7da707d5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             content: '社区已准备救援物资，有需要请联系',
             comments: 8,
             shares: 15,
@@ -140,7 +140,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 4,
             title: '紧急撤离通知',
-            img: '/images/flood-high.jpg',
+            img: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             content: '洪水即将到达，请立即撤离到安全区域',
             comments: 25,
             shares: 45,
@@ -156,7 +156,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 6,
             title: '临时避难所开放',
-            img: '/images/shelter.jpg',
+            img: 'https://images.unsplash.com/photo-1519406596751-0a3ccc4937fe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNjaG9vbHxlbnwwfHwwfHx8MA%3D%3D',
             content: '临时避难所已开放，地址：市中心体育馆',
             comments: 15,
             shares: 28,

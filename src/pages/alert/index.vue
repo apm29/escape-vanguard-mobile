@@ -70,16 +70,6 @@ function getStatusText(level: AlertLevelEnum) {
   }
 }
 
-// 格式化时间
-function formatTime(dateString: string) {
-  return new Date(dateString).toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
 // 计算距离（模拟数据）
 function getDistance() {
   if (!alert.value)
@@ -100,9 +90,13 @@ function getEstimatedTime() {
 <template>
   <div v-if="alert" class="risk-screen" :class="getAlertLevelClass(alert.level)">
     <div class="screen-header" :class="getHeaderClass(alert.level)">
-      <span class="time">{{ formatTime(alert.createdAt) }}</span>
-      <span class="warning">▲ 警报: {{ alert.name }}</span>
-      <span class="menu">⋯</span>
+      <div class="alert-icon">
+        <div class="i-carbon:warning-alt" />
+      </div>
+      <span class="warning">警报: {{ alert.name }}</span>
+      <div class="menu-dots">
+        <div class="i-carbon:menu" />
+      </div>
     </div>
     <div class="map-area">
       <AlertMapPanel />
@@ -164,10 +158,9 @@ function getEstimatedTime() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
   padding: 10px 15px;
-  font-size: 12px;
-  height: 40px;
+  color: white;
+  font-size: 14px;
 }
 
 .screen-header.red {

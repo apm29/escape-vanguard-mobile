@@ -51,11 +51,13 @@ function getCommunityPosts() {
   <div>
     <!-- 头部警报栏 -->
     <div v-if="alert" class="alert-header" :class="getHeaderClass(alert.level)">
-      <div class="alert-left">
-        <i class="alert-icon">⚠</i>
-        <span class="alert-text">警报: {{ alert.name }}</span>
+      <div class="alert-icon">
+        <div class="i-carbon:warning-alt" />
       </div>
-      <span class="menu-dots">⋯</span>
+      <span class="warning">警报: {{ alert.name }}</span>
+      <div class="menu-dots">
+        <div class="i-carbon:menu" />
+      </div>
     </div>
 
     <!-- 当没有警报时显示默认头部 -->
@@ -356,7 +358,7 @@ function getCommunityPosts() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 15px;
   color: white;
   font-size: 14px;
 }
