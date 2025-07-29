@@ -132,40 +132,4 @@ onUnmounted(() => {
   right: 20px;
   z-index: 100;
 }
-
-.info-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-}
-
-.info-card h4 {
-  margin: 0 0 8px 0;
-  color: #333;
-  font-size: 14px;
-}
-
-.info-card p {
-  margin: 4px 0;
-  font-size: 12px;
-  color: #666;
-}
-
-.navigate-button {
-  margin-top: 12px;
-  padding: 8px 16px;
-  background: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  width: 100%;
-}
-
-.navigate-button:hover {
-  background: #b71c1c;
-}
 </style>

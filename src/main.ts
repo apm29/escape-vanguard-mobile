@@ -3,6 +3,7 @@ import type { UserModule } from './types'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { ViteSSG } from 'vite-ssg'
 import { routes } from 'vue-router/auto-routes'
+import { createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 
 import '@unocss/reset/tailwind.css'
@@ -15,6 +16,7 @@ export const createApp = ViteSSG(
   {
     routes: setupLayouts(routes),
     base: import.meta.env.BASE_URL,
+    history: createWebHashHistory()
   },
   (ctx) => {
     // install all modules under `modules/`

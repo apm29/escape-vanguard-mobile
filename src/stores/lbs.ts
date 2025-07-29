@@ -307,17 +307,21 @@ export const useLbsStore = defineStore('lbs', () => {
               // 创建信息窗体
               const infoWindow = new window.AMap.InfoWindow({
                 content: `
-                <div style="padding: 10px;font-size: 12px;">
+                <div style="position: relative;width: 32rem;padding: 10px;font-size: 12px; color: #3f3f3f; width: 200px;">
                   <h4>导航到避难所: ${nearestShelter.value!.name}</h4>
-                  <p>距离: ${distance}公里</p>
-                  <p>预计时间: ${duration}分钟</p>
+                  <h6>距离: ${distance}公里</h6>
+                  <h6>预计时间: ${duration}分钟</h6>
                   <button onclick="window.openNavigation()" style="background: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
                     开始导航
                   </button>
                 </div>
               `,
-                offset: new window.AMap.Pixel(0, -30),
+                width: 300, // 设置固定宽度
+                height: 120, // 设置固定高度
+                offset: new window.AMap.Pixel(0, -30), // 设置偏移量
               })
+              console.warn(infoWindow.getSize());
+
 
               // 在地图上显示信息窗体
               infoWindow.open(map.value, [nearestShelter.value!.location.longitude, nearestShelter.value!.location.latitude])
