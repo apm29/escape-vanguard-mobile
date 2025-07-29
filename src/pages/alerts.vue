@@ -40,7 +40,7 @@ function getAlertIcon(level: AlertLevelEnum) {
     case AlertLevelEnum.MEDIUM:
       return 'i-carbon:warning'
     case AlertLevelEnum.HIGH:
-      return 'i-carbon:warning-filled'
+      return 'i-carbon:warning'
     default:
       return 'i-carbon:warning'
   }
@@ -67,9 +67,13 @@ function showAlertDetail(alert: AlertVO) {
 }
 
 // 关闭警报弹窗
-function closeAlertModal(alert: AlertVO) {
+function closeAlertModal() {
   showAlertModal.value = false
   selectedAlert.value = null
+}
+
+function selectAlert(alert: AlertVO) {
+  showAlertModal.value = false
   alertStore.setAlert(alert)
   router.push('/alert')
 }
@@ -95,21 +99,17 @@ function formatTime(dateString: string) {
 
     <!-- 警报列表 -->
     <div class="alerts-container">
-      <div
-        v-for="alert in alerts"
-        :key="alert.id"
-        class="alert-card"
-        :class="getAlertLevelClass(alert.level)"
-        @click="showAlertDetail(alert)"
-      >
+      <div v-for="alert in alerts" :key="alert.id" class="alert-card" :class="getAlertLevelClass(alert.level)"
+        @click="showAlertDetail(alert)">
         <div class="alert-header">
-          <div class="alert-icon">
-            <div class="icon-wrapper" :class="getAlertLevelClass(alert.level)">
-              <i :class="getAlertIcon(alert.level)" class="icon" />
-            </div>
-          </div>
+
           <div class="alert-info">
-            <h3>{{ alert.name }}</h3>
+            <h3 class="alert-title">
+              <span class="icon-wrapper" :class="getAlertLevelClass(alert.level)">
+                <i :class="getAlertIcon(alert.level)" class="icon" />
+              </span>
+              {{ alert.name }}
+            </h3>
             <p>{{ alert.description }}</p>
           </div>
           <div class="alert-time">
@@ -121,65 +121,68 @@ function formatTime(dateString: string) {
 
     <!-- 紧急警报弹窗 -->
     <Teleport to="body">
-      <div v-if="showAlertModal && selectedAlert" class="emergency-alert-modal">
-        <div class="modal-backdrop" @click="closeAlertModal" />
-        <div class="emergency-alert" :style="{ backgroundColor: getAlertBgColor(selectedAlert.level) }">
-          <!-- 弹窗头部 -->
-          <div class="alert-modal-header">
-            <div class="warning-icon">
-              <div class="warning-triangle">
-                <i class="exclamation-icon i-carbon:warning" />
+      <Transition enter-active-class="transition ease-out duration-300"
+        enter-from-class="transform translate-y-full opacity-0" enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition ease-in duration-300" leave-from-class="transform translate-y-0 opacity-100"
+        leave-to-class="transform translate-y-full opacity-0">
+        <div v-if="showAlertModal && selectedAlert" class="emergency-alert-modal">
+          <div class="modal-backdrop" @click.stop="closeAlertModal()" />
+          <div class="emergency-alert" :style="{ backgroundColor: getAlertBgColor(selectedAlert.level) }">
+            <!-- 弹窗头部 -->
+            <div class="alert-modal-header">
+              <div class="warning-icon">
+                <div class="warning-triangle">
+                  <i class="exclamation-icon i-carbon:warning" />
+                </div>
               </div>
-            </div>
-            <div class="alert-title">
-              警报
-            </div>
-            <button class="close-btn" @click="closeAlertModal">
-              <i class="i-carbon:close" />
-            </button>
-          </div>
-
-          <!-- 弹窗内容 -->
-          <div class="alert-modal-content">
-            <div class="alert-category">
-              警报: {{ selectedAlert.name }}
-            </div>
-            <div class="alert-message">
-              {{ selectedAlert.description }}
+              <div class="alert-title">
+                警报
+              </div>
+              <button class="close-btn" @click.stop="closeAlertModal()">
+                <i class="i-carbon:close" />
+              </button>
             </div>
 
-            <!-- 详细信息 -->
-            <div class="alert-details">
-              <div class="detail-item">
-                <span class="detail-label">警报等级:</span>
-                <span class="detail-value">{{ selectedAlert.level }}</span>
+            <!-- 弹窗内容 -->
+            <div class="alert-modal-content">
+              <div class="alert-category">
+                警报: {{ selectedAlert.name }}
               </div>
-              <div class="detail-item">
-                <span class="detail-label">发布时间:</span>
-                <span class="detail-value">{{ formatTime(selectedAlert.createdAt) }}</span>
+              <div class="alert-message">
+                {{ selectedAlert.description }}
               </div>
-              <div class="detail-item">
-                <span class="detail-label">避难所位置:</span>
-                <span class="detail-value">
-                  {{ selectedAlert.shelter.location.latitude.toFixed(4) }},
-                  {{ selectedAlert.shelter.location.longitude.toFixed(4) }}
-                </span>
+
+              <!-- 详细信息 -->
+              <div class="alert-details">
+                <div class="detail-item">
+                  <span class="detail-label">警报等级:</span>
+                  <span class="detail-value">{{ selectedAlert.level }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">发布时间:</span>
+                  <span class="detail-value">{{ formatTime(selectedAlert.createdAt) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">避难所位置:</span>
+                  <span class="detail-value">
+                    {{ selectedAlert.shelter.location.latitude.toFixed(4) }},
+                    {{ selectedAlert.shelter.location.longitude.toFixed(4) }}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 行动按钮 -->
-          <div class="alert-action">
-            <button class="action-btn" @click="closeAlertModal(selectedAlert)">
-              <i
-                :class="selectedAlert.level === AlertLevelEnum.HIGH ? 'i-carbon:run' : 'i-carbon:information'"
-                class="action-icon"
-              />
-              {{ selectedAlert.level === AlertLevelEnum.HIGH ? '立即疏散' : '了解详情' }}
-            </button>
+            <!-- 行动按钮 -->
+            <div class="alert-action">
+              <button class="action-btn" @click="selectAlert(selectedAlert)">
+                <i :class="selectedAlert.level === AlertLevelEnum.HIGH ? 'i-carbon:run' : 'i-carbon:information'"
+                  class="action-icon" />
+                {{ selectedAlert.level === AlertLevelEnum.HIGH ? '立即疏散' : '了解详情' }}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
@@ -187,7 +190,7 @@ function formatTime(dateString: string) {
 <style scoped>
 .alerts-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background: linear-gradient(135deg, #1e1c12 0%, #2a5298 100%);
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -224,7 +227,6 @@ function formatTime(dateString: string) {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  border-left: 4px solid;
 }
 
 .alert-card:hover {
@@ -233,15 +235,15 @@ function formatTime(dateString: string) {
 }
 
 .alert-card.alert-low {
-  border-left-color: #3398ff;
+  background-color: #3398ff;
 }
 
 .alert-card.alert-medium {
-  border-left-color: #f57c00;
+  background-color: #f57c00;
 }
 
 .alert-card.alert-high {
-  border-left-color: #d32f2f;
+  background-color: #d32f2f;
 }
 
 .alert-header {
@@ -253,30 +255,31 @@ function formatTime(dateString: string) {
 
 .alert-icon {
   flex-shrink: 0;
+  display: inline;
 }
 
 .icon-wrapper {
-  width: 40px;
-  height: 40px;
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
 }
 
 .icon-wrapper.alert-low {
-  background: rgba(255, 152, 0, 0.1);
+  background: #fff;
   color: #3398ff;
 }
 
 .icon-wrapper.alert-medium {
-  background: rgba(245, 124, 0, 0.1);
+  background: #fff;
   color: #f57c00;
 }
 
 .icon-wrapper.alert-high {
-  background: rgba(211, 47, 47, 0.1);
+  background: #fff;
   color: #d32f2f;
 }
 
@@ -293,18 +296,18 @@ function formatTime(dateString: string) {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
-  color: #333;
+  color: #fff;
 }
 
 .alert-info p {
   font-size: 14px;
-  color: #666;
+  color: #fff;
   line-height: 1.4;
 }
 
 .alert-time {
   font-size: 12px;
-  color: #999;
+  color: #d3d3d3;
   flex-shrink: 0;
 }
 
@@ -374,6 +377,7 @@ function formatTime(dateString: string) {
 
 .warning-icon {
   margin-right: 15px;
+  display: inline-flex;
 }
 
 .warning-triangle {
@@ -397,6 +401,9 @@ function formatTime(dateString: string) {
   flex-grow: 1;
   font-size: 20px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .close-btn {

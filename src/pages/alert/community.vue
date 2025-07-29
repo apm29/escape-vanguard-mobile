@@ -37,7 +37,7 @@ function getCommunityPosts() {
     username: '社区用户',
     avatar: 'i-carbon:user',
     text: post.content,
-    images: [post.img],
+    images: post.img ? [post.img] : [],
     timestamp: '刚刚',
     location: '厦门市 · 同安区',
     likes: Math.floor(Math.random() * 20) + 5,
@@ -55,9 +55,9 @@ function getCommunityPosts() {
         <div class="i-carbon:warning-alt" />
       </div>
       <span class="warning">警报: {{ alert.name }}</span>
-      <div class="menu-dots">
-        <div class="i-carbon:menu" />
-      </div>
+      <RouterLink to="/info/record" class="alert-icon" >
+        <div class="i-carbon:camera" />
+      </RouterLink>
     </div>
 
     <!-- 当没有警报时显示默认头部 -->

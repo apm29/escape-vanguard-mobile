@@ -58,13 +58,13 @@ function getStatusText(level: AlertLevelEnum) {
   <div v-if="alert">
     <!-- 头部警报栏 -->
     <div class="alert-header" :class="getHeaderClass(alert.level)">
-      <div class="alert-icon">
+      <RouterLink to="/info/record" class="alert-icon" >
         <div class="i-carbon:warning-alt" />
-      </div>
+      </RouterLink>
       <span class="warning">警报: {{ alert.name }}</span>
-      <div class="menu-dots">
-        <div class="i-carbon:menu" />
-      </div>
+      <RouterLink to="/info/record" class="alert-icon" >
+        <div class="i-carbon:camera" />
+      </RouterLink>
     </div>
 
     <!-- 避难场所信息主区域 -->
@@ -140,11 +140,11 @@ function getStatusText(level: AlertLevelEnum) {
             <div class="info-label">
               设施
             </div>
-            <div class="facilities-grid">
+            <!-- <div class="facilities-grid">
               <div v-for="facility in ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']" :key="facility" class="facility-item">
                 {{ facility }}
               </div>
-            </div>
+            </div> -->
             <div class="nearby-shelters">
               <div
                 v-for="shelter in [

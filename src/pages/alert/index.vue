@@ -134,7 +134,7 @@ async function handleEvacuate() {
   try {
     // 调用地图组件的导航功能
     if (mapPanelRef.value) {
-      await mapPanelRef.value.navigateToShelter(alert.value.shelter.location)
+      await mapPanelRef.value.navigateToShelter()
     }
     else {
       toast.error('地图组件未加载完成，请稍后重试')
@@ -156,7 +156,7 @@ async function handleRoutePlanning() {
   try {
     // 调用地图组件的导航功能
     if (mapPanelRef.value) {
-      await mapPanelRef.value.navigateToShelter(alert.value.shelter.location)
+      await mapPanelRef.value.navigateToShelter()
     }
     else {
       toast.error('地图组件未加载完成，请稍后重试')
@@ -176,9 +176,9 @@ async function handleRoutePlanning() {
         <div class="i-carbon:warning-alt" />
       </div>
       <span class="warning">警报: {{ alert.name }}</span>
-      <div class="menu-dots">
-        <div class="i-carbon:menu" />
-      </div>
+      <RouterLink to="/info/record" class="alert-icon" >
+        <div class="i-carbon:camera" />
+      </RouterLink>
     </div>
     <div class="map-area">
       <AlertMapPanel ref="mapPanelRef" />

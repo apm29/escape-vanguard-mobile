@@ -167,13 +167,61 @@ export const useAlertStore = defineStore('alert', () => {
   ])
 
   const alert = ref<AlertVO>(unref(alerts)[0])
+
   const setAlert = (_alert: AlertVO) => {
     alert.value = _alert
   }
+
+  // 新增API：添加帖子到当前alert的community
+  const addPostToCommunity = async (post: {
+    title: string
+    img: string
+    content: string
+  }) => {
+    try {
+      // 创建新的帖子对象
+      const newPost = {
+        id: Date.now(),
+        title: post.title,
+        img: post.img,
+        content: post.content,
+        comments: 0,
+        shares: 0,
+      }
+
+      // 更新当前alert的community posts
+      const updatedAlert = {
+        ...alert.value,
+        community: {
+          ...alert.value.community,
+          posts: [...alert.value.community.posts, newPost]
+        }
+      }
+
+      // 更新store中的alert
+      alert.value = updatedAlert
+
+      // 同时更新alerts数组中对应的alert
+      const alertIndex = alerts.value.findIndex(a => a.id === alert.value.id)
+      if (alertIndex !== -1) {
+        alerts.value[alertIndex] = updatedAlert
+      }
+
+      // 这里可以添加实际的API调用
+      // await api.addPostToAlert(alert.value.id, newPost)
+
+      return newPost
+    } catch (error) {
+      console.error('添加帖子失败:', error)
+      throw error
+    }
+  }
+
   return {
     alerts,
     alert: readonly(alert),
     setAlert,
+    addPostToCommunity,
   }
 })
 
