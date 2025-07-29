@@ -1,23 +1,35 @@
 <script setup lang="ts">
 import { useScriptTag } from '@vueuse/core'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useToast } from '~/composables/useToast'
 
 // 声明高德地图全局变量
 declare global {
   interface Window {
     AMap: any
+    _AMapSecurityConfig: any
+    openNavigation: any
   }
+}
+
+const securityKey = import.meta.env.VITE_AMAP_SAFE_KEY
+window._AMapSecurityConfig = {
+  securityJsCode: securityKey,
 }
 
 const mapContainer = ref<HTMLDivElement | null>(null)
 let map: any = null
 let heatmap: any = null
+let driving: any = null
 const apiKey = import.meta.env.VITE_AMAP_KEY
 const plugins = [
   'AMap.HeatMap',
   'AMap.Scale',
   'AMap.ToolBar',
   'AMap.MapType',
+  'AMap.Driving',
+  'AMap.Geolocation',
+  'AMap.Adaptor',
 ]
 
 // 使用 useScriptTag 加载高德地图主脚本
@@ -33,10 +45,17 @@ const { load: loadHeatmapData } = useScriptTag(
 const isAMapLoading = ref(false)
 const amapError = ref<Error | null>(null)
 
+// 用户当前位置
+const userLocation = ref<{ latitude: number, longitude: number } | null>(null)
+
+// 使用toast
+const toast = useToast()
+
 // 初始化地图
 async function initMap() {
   if (!mapContainer.value)
     return
+  console.error(window._AMapSecurityConfig)
 
   try {
     // 创建高德地图实例
@@ -50,10 +69,45 @@ async function initMap() {
     map.addControl(new window.AMap.Scale())
     map.addControl(new window.AMap.ToolBar())
     map.addControl(new window.AMap.MapType())
+
+    // 初始化定位功能
+    await initGeolocation()
   }
   catch (error) {
     console.error('地图初始化失败:', error)
     amapError.value = error as Error
+  }
+}
+
+// 初始化定位功能
+async function initGeolocation() {
+  try {
+    const geolocation = new window.AMap.Geolocation({
+      enableHighAccuracy: true,
+      timeout: 10000,
+      buttonPosition: 'RB',
+      buttonOffset: new window.AMap.Pixel(10, 20),
+      zoomToAccuracy: true,
+    })
+
+    map.addControl(geolocation)
+
+    // 获取当前位置
+    geolocation.getCurrentPosition((status: string, result: any) => {
+      if (status === 'complete') {
+        userLocation.value = {
+          latitude: result.position.lat,
+          longitude: result.position.lng,
+        }
+        console.warn('用户位置:', userLocation.value)
+      }
+      else {
+        console.error('获取位置失败:', result.message)
+      }
+    })
+  }
+  catch (error) {
+    console.error('定位初始化失败:', error)
   }
 }
 
@@ -105,6 +159,85 @@ async function initHeatmapData() {
     max: 100,
   })
 }
+
+// 导航到避难所
+async function navigateToShelter(shelterLocation: { latitude: number, longitude: number }) {
+  if (!userLocation.value) {
+    // 如果没有用户位置，尝试重新获取
+    await initGeolocation()
+    if (!userLocation.value) {
+      toast.error('无法获取您的位置，请检查定位权限')
+      return
+    }
+  }
+
+  try {
+    // 清除之前的路线
+    if (driving) {
+      map.remove(driving)
+    }
+
+    // 创建驾车导航实例
+    driving = new window.AMap.Driving({
+      map,
+      policy: window.AMap.DrivingPolicy.LEAST_TIME, // 最快路线
+    })
+
+    // 规划路线
+    driving.search(
+      [userLocation.value!.longitude, userLocation.value!.latitude],
+      [shelterLocation.longitude, shelterLocation.latitude],
+      (status: string, result: any) => {
+        if (status === 'complete') {
+          console.warn('路线规划成功:', result)
+
+          // 显示路线信息
+          const route = result.routes[0]
+          const distance = (route.distance / 1000).toFixed(1) // 转换为公里
+          const duration = Math.ceil(route.time / 60) // 转换为分钟
+
+          // 创建信息窗体
+          const infoWindow = new window.AMap.InfoWindow({
+            content: `
+              <div style="padding: 10px;">
+                <h4>导航到避难所</h4>
+                <p>距离: ${distance}公里</p>
+                <p>预计时间: ${duration}分钟</p>
+                <button onclick="window.openNavigation()" style="background: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                  开始导航
+                </button>
+              </div>
+            `,
+            offset: new window.AMap.Pixel(0, -30),
+          })
+
+          // 在地图上显示信息窗体
+          infoWindow.open(map, [shelterLocation.longitude, shelterLocation.latitude])
+
+          // 将导航功能暴露到全局
+          window.openNavigation = () => {
+            // 使用高德地图APP或网页版进行导航
+            const url = `https://uri.amap.com/navigation?from=${userLocation.value?.longitude},${userLocation.value?.latitude},当前位置&to=${shelterLocation.longitude},${shelterLocation.latitude},避难所&mode=car&policy=1&src=mypage&coordinate=gaode&callnative=0`
+            window.open(url, '_blank')
+          }
+        }
+        else {
+          console.error('路线规划失败:', result)
+          toast.error('路线规划失败，请稍后重试')
+        }
+      },
+    )
+  }
+  catch (error) {
+    console.error('导航失败:', error)
+    toast.error('导航功能暂时不可用，请稍后重试')
+  }
+}
+
+// 暴露导航方法给父组件
+defineExpose({
+  navigateToShelter,
+})
 
 // 加载地图脚本
 async function loadMapScript() {
@@ -160,6 +293,9 @@ onUnmounted(() => {
   }
   if (heatmap) {
     heatmap = null
+  }
+  if (driving) {
+    driving = null
   }
 })
 </script>

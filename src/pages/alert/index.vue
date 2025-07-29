@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AlertMapPanel from '~/components/AlertMapPanel.vue'
+import { useToast } from '~/composables/useToast'
 import { useAlertStore } from '~/stores/alert'
 import { AlertLevelEnum } from '~/types'
 
@@ -13,6 +15,12 @@ useHead({
 
 const alertStore = useAlertStore()
 const alert = computed(() => alertStore.alert)
+
+// 地图组件引用
+const mapPanelRef = ref<InstanceType<typeof AlertMapPanel> | null>(null)
+
+// 使用toast
+const toast = useToast()
 
 // 根据警报等级获取样式类
 function getAlertLevelClass(level: AlertLevelEnum) {
@@ -85,11 +93,85 @@ function getEstimatedTime() {
   // 这里可以根据距离和交通状况计算实际时间
   return '15分钟'
 }
+
+// 计算属性：当前警报的样式类
+const currentAlertLevelClass = computed(() => {
+  return alert.value ? getAlertLevelClass(alert.value.level) : 'low-risk'
+})
+
+// 计算属性：当前警报的头部样式
+const currentHeaderClass = computed(() => {
+  return alert.value ? getHeaderClass(alert.value.level) : 'blue'
+})
+
+// 计算属性：当前警报的按钮样式
+const currentButtonClass = computed(() => {
+  return alert.value ? getButtonClass(alert.value.level) : 'blue'
+})
+
+// 计算属性：当前状态文本
+const currentStatusText = computed(() => {
+  return alert.value ? getStatusText(alert.value.level) : '安全状态'
+})
+
+// 计算属性：当前距离
+const currentDistance = computed(() => {
+  return getDistance()
+})
+
+// 计算属性：当前预计时间
+const currentEstimatedTime = computed(() => {
+  return getEstimatedTime()
+})
+
+// 处理立即撤离按钮点击
+async function handleEvacuate() {
+  if (!alert.value) {
+    toast.error('没有可用的警报信息')
+    return
+  }
+
+  try {
+    // 调用地图组件的导航功能
+    if (mapPanelRef.value) {
+      await mapPanelRef.value.navigateToShelter(alert.value.shelter.location)
+    }
+    else {
+      toast.error('地图组件未加载完成，请稍后重试')
+    }
+  }
+  catch (error) {
+    console.error('导航失败:', error)
+    toast.error('导航功能暂时不可用，请稍后重试')
+  }
+}
+
+// 处理路线规划按钮点击
+async function handleRoutePlanning() {
+  if (!alert.value) {
+    toast.error('没有可用的警报信息')
+    return
+  }
+
+  try {
+    // 调用地图组件的导航功能
+    if (mapPanelRef.value) {
+      await mapPanelRef.value.navigateToShelter(alert.value.shelter.location)
+    }
+    else {
+      toast.error('地图组件未加载完成，请稍后重试')
+    }
+  }
+  catch (error) {
+    console.error('路线规划失败:', error)
+    toast.error('路线规划功能暂时不可用，请稍后重试')
+  }
+}
 </script>
 
 <template>
-  <div v-if="alert" class="risk-screen" :class="getAlertLevelClass(alert.level)">
-    <div class="screen-header" :class="getHeaderClass(alert.level)">
+  <div v-if="alert" class="risk-screen" :class="currentAlertLevelClass">
+    <div class="screen-header" :class="currentHeaderClass">
       <div class="alert-icon">
         <div class="i-carbon:warning-alt" />
       </div>
@@ -99,20 +181,24 @@ function getEstimatedTime() {
       </div>
     </div>
     <div class="map-area">
-      <AlertMapPanel />
+      <AlertMapPanel ref="mapPanelRef" />
     </div>
     <div class="status-info">
       <div class="status">
-        {{ getStatusText(alert.level) }}
+        {{ currentStatusText }}
       </div>
       <div class="location">
         {{ alert.description }}
       </div>
       <div class="distance">
-        {{ alert.name }}与你的距离 {{ getDistance() }} {{ getEstimatedTime() }}
+        {{ alert.name }}与你的距离 {{ currentDistance }} {{ currentEstimatedTime }}
       </div>
     </div>
-    <button class="action-btn" :class="getButtonClass(alert.level)">
+    <button
+      class="action-btn"
+      :class="currentButtonClass"
+      @click="alert.level === AlertLevelEnum.HIGH ? handleEvacuate() : handleRoutePlanning()"
+    >
       {{ alert.level === AlertLevelEnum.HIGH ? '立即撤离' : '路线规划' }}
     </button>
   </div>
@@ -125,7 +211,7 @@ function getEstimatedTime() {
       <span class="menu">⋯</span>
     </div>
     <div class="map-area">
-      <AlertMapPanel />
+      <AlertMapPanel ref="mapPanelRef" />
     </div>
     <div class="status-info">
       <div class="status">

@@ -22,6 +22,9 @@ declare module 'vue' {
     TheCounter: typeof import('./components/TheCounter.vue')['default']
     TheFooter: typeof import('./components/TheFooter.vue')['default']
     TheInput: typeof import('./components/TheInput.vue')['default']
+    Toast: typeof import('./components/ui/Toast.vue')['default']
+    ToastExample: typeof import('./components/ui/ToastExample.vue')['default']
+    ToastProvider: typeof import('./components/ui/ToastProvider.vue')['default']
     WarningSystem: typeof import('./components/WarningSystem.vue')['default']
   }
 }
