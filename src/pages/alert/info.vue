@@ -14,19 +14,7 @@ useHead({
 const alertStore = useAlertStore()
 const alert = computed(() => alertStore.alert)
 
-// 根据警报等级获取头部样式
-function getHeaderClass(level: AlertLevelEnum) {
-  switch (level) {
-    case AlertLevelEnum.LOW:
-      return 'blue'
-    case AlertLevelEnum.MEDIUM:
-      return 'orange'
-    case AlertLevelEnum.HIGH:
-      return 'red'
-    default:
-      return 'blue'
-  }
-}
+const detailOpen = ref(true)
 
 // 格式化时间
 function formatTime(dateString: string) {
@@ -52,23 +40,67 @@ function getStatusText(level: AlertLevelEnum) {
       return '警报'
   }
 }
+
+const disasters = reactive([
+  {
+    name: '地震',
+    description: '地震是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:earthquake',
+  },
+  {
+    name: '山火',
+    description: '山火是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:fire',
+  },
+  {
+    name: '洪涝',
+    description: '洪涝是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:flood',
+    active: true,
+  },
+  {
+    name: '台风',
+    description: '台风是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:windy',
+  },
+  {
+    name: '干旱',
+    description: '干旱是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:drought',
+  },
+  {
+    name: '人为事件',
+    description: '人为事件是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:notification',
+  },
+  {
+    name: '公共卫生',
+    description: '公共卫生是一种自然灾害，通常由地壳的突然震动引起。',
+    icon: 'i-carbon:health-cross',
+  },
+])
+
+const shelters = reactive([
+  {
+    name: '城仔内里',
+  },
+  {
+    name: '汀溪中学',
+    active: true,
+  },
+  {
+    name: '澳溪中学',
+  },
+  {
+    name: '双溪流公园',
+  },
+])
 </script>
 
 <template>
   <div v-if="alert">
-    <!-- 头部警报栏 -->
-    <div class="alert-header" :class="getHeaderClass(alert.level)">
-      <RouterLink to="/info/record" class="alert-icon" >
-        <div class="i-carbon:warning-alt" />
-      </RouterLink>
-      <span class="warning">警报: {{ alert.name }}</span>
-      <RouterLink to="/info/record" class="alert-icon" >
-        <div class="i-carbon:camera" />
-      </RouterLink>
-    </div>
-
     <!-- 避难场所信息主区域 -->
-    <div class="shelter-info-container">
+    <div class="shelter-info-container" @click="detailOpen = true">
       <div class="shelter-title">
         避难场所信息
       </div>
@@ -151,8 +183,7 @@ function getStatusText(level: AlertLevelEnum) {
                   { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
                   { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
                   { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-                ]" :key="shelter.name" class="shelter-marker"
-                :class="{ highlighted: shelter.highlighted }"
+                ]" :key="shelter.name" class="shelter-marker" :class="{ highlighted: shelter.highlighted }"
               >
                 <i class="shelter-icon">🏠</i>
                 <span>{{ shelter.name }}</span>
@@ -162,6 +193,31 @@ function getStatusText(level: AlertLevelEnum) {
         </div>
       </div>
     </div>
+
+    <Modal v-model:open="detailOpen" title="图层" size="sm" content-class="!w-80% bg-#f3f3f3 rounded">
+      <h2 class="my-2 text-sm text-dark-200">
+        灾难
+      </h2>
+      <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
+        <div v-for="disaster in disasters" :key="disaster.name" class="flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': disaster.active }">
+          <div class="flex items-center justify-center border border-gray-400 rounded-full p-1" :class="{ 'border-red-400': disaster.active }">
+            <i :class="disaster.icon" />
+          </div>
+          {{ disaster.name }}
+        </div>
+      </div>
+      <h2 class="my-2 text-sm text-dark-200">
+        避难场所
+      </h2>
+      <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
+        <div v-for="shelter in shelters" :key="shelter.name" class="flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': shelter.active }">
+          <div class="flex items-center justify-center border border-gray-400 rounded-full p-1" :class="{ 'border-red-400': shelter.active }">
+            <i class="i-carbon:home" />
+          </div>
+          {{ shelter.name }}
+        </div>
+      </div>
+    </Modal>
   </div>
 
   <!-- 当没有选中警报时显示默认页面 -->
@@ -249,7 +305,10 @@ function getStatusText(level: AlertLevelEnum) {
               设施
             </div>
             <div class="facilities-grid">
-              <div v-for="facility in ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']" :key="facility" class="facility-item">
+              <div
+                v-for="facility in ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']" :key="facility"
+                class="facility-item"
+              >
                 {{ facility }}
               </div>
             </div>
@@ -259,8 +318,7 @@ function getStatusText(level: AlertLevelEnum) {
                   { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
                   { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
                   { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-                ]" :key="shelter.name" class="shelter-marker"
-                :class="{ highlighted: shelter.highlighted }"
+                ]" :key="shelter.name" class="shelter-marker" :class="{ highlighted: shelter.highlighted }"
               >
                 <i class="shelter-icon">🏠</i>
                 <span>{{ shelter.name }}</span>

@@ -1,6 +1,5 @@
 import { useScriptTag } from '@vueuse/core'
-import { title } from 'node:process'
-import { acceptHMRUpdate, defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 
 // 声明高德地图全局变量
 declare global {
@@ -349,11 +348,10 @@ export const useLbsStore = defineStore('lbs', () => {
                 height: 120, // 设置固定高度
                 offset: new window.AMap.Pixel(0, -30), // 设置偏移量
               })
-              console.warn(infoWindow.getSize());
-
+              console.warn(infoWindow.getSize())
 
               // 在地图上显示信息窗体
-              infoWindow.open(map.value, [nearestShelter.value!.location.longitude, nearestShelter.value!.location.latitude])
+              // infoWindow.open(map.value, [nearestShelter.value!.location.longitude, nearestShelter.value!.location.latitude])
 
               // 将导航功能暴露到全局
               window.openNavigation = () => {
@@ -362,7 +360,7 @@ export const useLbsStore = defineStore('lbs', () => {
                 window.open(url, '_blank')
 
                 // 使用地图组件导航
-                //https://m.amap.com/navi/?start=116.403124,39.940693&dest=116.481488,39.990464&destName=%E4%B8%80%E6%9D%A1%E9%A9%BE%E8%BD%A6%E8%B7%AF%E7%BA%BF&key=d3f5d8b3b05231fa6a11375492310e3a&jscode=%EF%BC%88%E6%82%A8%E7%9A%84%E5%AE%89%E5%85%A8%E5%AF%86%E9%92%A5%EF%BC%89&platform=mobile
+                // https://m.amap.com/navi/?start=116.403124,39.940693&dest=116.481488,39.990464&destName=%E4%B8%80%E6%9D%A1%E9%A9%BE%E8%BD%A6%E8%B7%AF%E7%BA%BF&key=d3f5d8b3b05231fa6a11375492310e3a&jscode=%EF%BC%88%E6%82%A8%E7%9A%84%E5%AE%89%E5%85%A8%E5%AF%86%E9%92%A5%EF%BC%89&platform=mobile
                 // const url2 = `https://m.amap.com/navi/?start=${userLocation.value?.longitude},${userLocation.value?.latitude},当前位置&dest=${nearestShelter.value!.location.longitude},${nearestShelter.value!.location.latitude},${nearestShelter.value!.name}&destName=${nearestShelter.value!.name}&naviBy=car&key=${apiKey}&jscode=${securityKey}`
                 // window.open(url2, '_blank')
               }
@@ -429,4 +427,3 @@ export const useLbsStore = defineStore('lbs', () => {
 
 // if (import.meta.hot)
 //   import.meta.hot.accept(acceptHMRUpdate(useLbsStore as any, import.meta.hot))
-

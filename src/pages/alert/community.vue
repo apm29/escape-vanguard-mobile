@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ExtendedImage from '~/components/ui/ExtendedImage.vue'
 import { useAlertStore } from '~/stores/alert'
-import { AlertLevelEnum } from '~/types'
 
 defineOptions({
   name: 'CommunityPage',
@@ -14,20 +13,6 @@ useHead({
 
 const alertStore = useAlertStore()
 const alert = computed(() => alertStore.alert)
-
-// 根据警报等级获取头部样式
-function getHeaderClass(level: AlertLevelEnum) {
-  switch (level) {
-    case AlertLevelEnum.LOW:
-      return 'blue'
-    case AlertLevelEnum.MEDIUM:
-      return 'orange'
-    case AlertLevelEnum.HIGH:
-      return 'red'
-    default:
-      return 'blue'
-  }
-}
 
 // 获取社区帖子数据
 function getCommunityPosts() {
@@ -49,26 +34,6 @@ function getCommunityPosts() {
 
 <template>
   <div>
-    <!-- 头部警报栏 -->
-    <div v-if="alert" class="alert-header" :class="getHeaderClass(alert.level)">
-      <div class="alert-icon">
-        <div class="i-carbon:warning-alt" />
-      </div>
-      <span class="warning">警报: {{ alert.name }}</span>
-      <RouterLink to="/info/record" class="alert-icon" >
-        <div class="i-carbon:camera" />
-      </RouterLink>
-    </div>
-
-    <!-- 当没有警报时显示默认头部 -->
-    <div v-else class="alert-header blue">
-      <div class="alert-left">
-        <i class="alert-icon">ℹ</i>
-        <span class="alert-text">社区信息</span>
-      </div>
-      <span class="menu-dots">⋯</span>
-    </div>
-
     <!-- 社区帖子列表 -->
     <div class="post-container">
       <div

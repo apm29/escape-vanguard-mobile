@@ -36,19 +36,6 @@ function getAlertLevelClass(level: AlertLevelEnum) {
   }
 }
 
-// 根据警报等级获取头部样式
-function getHeaderClass(level: AlertLevelEnum) {
-  switch (level) {
-    case AlertLevelEnum.LOW:
-      return 'blue'
-    case AlertLevelEnum.MEDIUM:
-      return 'orange'
-    case AlertLevelEnum.HIGH:
-      return 'red'
-    default:
-      return 'blue'
-  }
-}
 
 // 根据警报等级获取按钮样式
 function getButtonClass(level: AlertLevelEnum) {
@@ -99,11 +86,6 @@ const currentAlertLevelClass = computed(() => {
   return alert.value ? getAlertLevelClass(alert.value.level) : 'low-risk'
 })
 
-// 计算属性：当前警报的头部样式
-const currentHeaderClass = computed(() => {
-  return alert.value ? getHeaderClass(alert.value.level) : 'blue'
-})
-
 // 计算属性：当前警报的按钮样式
 const currentButtonClass = computed(() => {
   return alert.value ? getButtonClass(alert.value.level) : 'blue'
@@ -145,7 +127,7 @@ async function handleEvacuate() {
     toast.error('导航功能暂时不可用，请稍后重试')
   }
 }
-
+const navigated = ref(false)
 // 处理路线规划按钮点击
 async function handleRoutePlanning() {
   if (!alert.value) {
@@ -157,6 +139,7 @@ async function handleRoutePlanning() {
     // 调用地图组件的导航功能
     if (mapPanelRef.value) {
       await mapPanelRef.value.navigateToShelter()
+      navigated.value = true
     }
     else {
       toast.error('地图组件未加载完成，请稍后重试')
@@ -196,36 +179,33 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
 
 <template>
   <div v-if="alert" class="risk-screen" :class="currentAlertLevelClass">
-    <div class="screen-header" :class="currentHeaderClass">
-      <div class="alert-icon">
-        <div class="i-carbon:warning-alt" />
-      </div>
-      <span class="warning">警报: {{ alert.name }}</span>
-      <RouterLink to="/info/record" class="alert-icon" >
-        <div class="i-carbon:camera" />
-      </RouterLink>
-    </div>
     <div class="map-area">
-      <div class="action-area">
-        <h3 class="font-bold">{{ getAlertLevelActionText(alert.level) }}</h3>
+      <div v-if="!navigated" class="action-area">
+        <h3 class="font-bold">
+          {{ getAlertLevelActionText(alert.level) }}
+        </h3>
         <h4 v-html="getAlertLevelActionDescriptionText(alert.level)" />
         <p class="text-sm text-gray-500">
           灾害类型：{{ alert.type }} | 时间：{{ alert.createdAt }}
         </p>
-        <div class="border-t w-full"></div>
-        <div class="flex justify-center items-center text-gray-600">
-          <div class="bg-blue-500 rounded-full w-1em h-1em"></div>
-          <div class="flex flex-col justify-center items-center">
-            <div class="px-8 text-sm">{{ alert.type }}与你的距离</div>
-            <div class="bg-red-500 h-1 w-full"></div>
-            <div class="px-8 text-sm">{{ alert.disaster.distance }} {{ alert.disaster.time }}</div>
+        <div class="w-full border-t" />
+        <div class="flex items-center justify-center text-gray-600">
+          <div class="h-1em w-1em rounded-full bg-blue-500" />
+          <div class="flex flex-col items-center justify-center">
+            <div class="px-8 text-sm">
+              {{ alert.type }}与你的距离
+            </div>
+            <div class="h-1 w-full bg-red-500" />
+            <div class="px-8 text-sm">
+              {{ alert.disaster.distance }} {{ alert.disaster.time }}
+            </div>
           </div>
           <div class="i-carbon:flood" />
         </div>
       </div>
       <AlertMapPanel ref="mapPanelRef" />
     </div>
-    <div class="status-info">
+    <div v-if="!navigated" class="status-info">
       <div class="status">
         {{ currentStatusText }}
       </div>
@@ -237,6 +217,7 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
       </div>
     </div>
     <button
+      v-if="!navigated"
       class="action-btn"
       :class="currentButtonClass"
       @click="alert.level === AlertLevelEnum.HIGH ? handleEvacuate() : handleRoutePlanning()"
