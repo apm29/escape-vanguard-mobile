@@ -13,12 +13,13 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import VueDevTools from 'vite-plugin-vue-devtools'
+// import VueDevTools from 'vite-plugin-vue-devtools'
 import Layouts from 'vite-plugin-vue-layouts'
 import generateSitemap from 'vite-ssg-sitemap'
 import 'vitest/config'
 
 export default defineConfig({
+  base: '/escape-vanguard/',
   resolve: {
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,

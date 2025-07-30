@@ -167,6 +167,31 @@ async function handleRoutePlanning() {
     toast.error('路线规划功能暂时不可用，请稍后重试')
   }
 }
+function getAlertLevelActionText(level: AlertLevelEnum) {
+  switch (level) {
+    case AlertLevelEnum.LOW:
+      return '等待指令'
+    case AlertLevelEnum.MEDIUM:
+      return '准备疏散'
+    case AlertLevelEnum.HIGH:
+      return '立即疏散'
+    default:
+      return '保持关注'
+  }
+}
+
+function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
+  switch (level) {
+    case AlertLevelEnum.LOW:
+      return '所在位置目前风险低，请注意信息'
+    case AlertLevelEnum.MEDIUM:
+      return '所在位置在<span class="text-orange-500">中风险区域</span>，请做好设立准备'
+    case AlertLevelEnum.HIGH:
+      return '所在位置在<span class="text-red-500">高风险区域</span>，请立即撤离'
+    default:
+      return '保持关注'
+  }
+}
 </script>
 
 <template>
@@ -181,6 +206,23 @@ async function handleRoutePlanning() {
       </RouterLink>
     </div>
     <div class="map-area">
+      <div class="action-area">
+        <h3 class="font-bold">{{ getAlertLevelActionText(alert.level) }}</h3>
+        <h4 v-html="getAlertLevelActionDescriptionText(alert.level)" />
+        <p class="text-sm text-gray-500">
+          灾害类型：{{ alert.type }} | 时间：{{ alert.createdAt }}
+        </p>
+        <div class="border-t w-full"></div>
+        <div class="flex justify-center items-center text-gray-600">
+          <div class="bg-blue-500 rounded-full w-1em h-1em"></div>
+          <div class="flex flex-col justify-center items-center">
+            <div class="px-8 text-sm">{{ alert.type }}与你的距离</div>
+            <div class="bg-red-500 h-1 w-full"></div>
+            <div class="px-8 text-sm">{{ alert.disaster.distance }} {{ alert.disaster.time }}</div>
+          </div>
+          <div class="i-carbon:flood" />
+        </div>
+      </div>
       <AlertMapPanel ref="mapPanelRef" />
     </div>
     <div class="status-info">
@@ -263,6 +305,22 @@ async function handleRoutePlanning() {
 
 .map-area {
   flex-grow: 1;
+  position: relative;
+}
+.action-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  gap: 4px;
 }
 
 .status-info {

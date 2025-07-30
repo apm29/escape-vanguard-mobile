@@ -26,7 +26,7 @@ useHead({
 
       <RouterLink to="/alert" replace class="flex flex-col items-center gap-2 text-gray-500" :class="{ active: route.path === '/alert' }">
         <i class="i-carbon:navaid-military-civil flex-shrink-0" />
-        预警
+        逃生
       </RouterLink>
 
       <RouterLink to="/alert/community" replace class="flex flex-col items-center gap-2 text-gray-500" :class="{ active: route.path === '/alert/community' }">

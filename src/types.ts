@@ -9,13 +9,13 @@ export enum AlertLevelEnum {
 }
 
 export enum AlertTypeEnum {
-  FLOOD = 'flood',
-  EARTHQUAKE = 'earthquake',
-  FIRE = 'fire',
-  WIND = 'wind',
-  DROUGHT = 'drought',
-  HUMAN = 'human',
-  PUBLIC = 'public',
+  FLOOD = '洪水',
+  EARTHQUAKE = '地震',
+  FIRE = '火灾',
+  WIND = '台风',
+  DROUGHT = '干旱',
+  HUMAN = '人祸',
+  PUBLIC = '公共',
 }
 
 export interface AlertVO {
@@ -37,6 +37,8 @@ export interface AlertVO {
       longitude: number
       intensity: number
     }[]
+    distance: string
+    time: string
   }
 
   community: {

@@ -1,6 +1,7 @@
 import type { AlertVO } from '~/types'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { AlertLevelEnum, AlertTypeEnum } from '~/types'
+import dayjs from 'dayjs'
 
 export const useAlertStore = defineStore('alert', () => {
   // 初始化3个不同等级的flood警报
@@ -11,7 +12,7 @@ export const useAlertStore = defineStore('alert', () => {
       description: '河流水位略有上涨，请关注天气变化',
       type: AlertTypeEnum.FLOOD,
       level: AlertLevelEnum.LOW,
-      createdAt: new Date().toISOString(),
+      createdAt: dayjs().format('YYYY/MM/DD HH:mm:ss'),
       shelter: {
         location: {
           latitude: 39.9042,
@@ -31,6 +32,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.2,
           },
         ],
+        distance: "2.5km",
+        time: "10分钟",
       },
       community: {
         posts: [
@@ -51,7 +54,7 @@ export const useAlertStore = defineStore('alert', () => {
       description: '河流水位明显上涨，部分低洼地区可能受影响',
       type: AlertTypeEnum.FLOOD,
       level: AlertLevelEnum.MEDIUM,
-      createdAt: new Date().toISOString(),
+      createdAt: dayjs().format('YYYY/MM/DD HH:mm:ss'),
       shelter: {
         location: {
           latitude: 39.9042,
@@ -76,6 +79,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.4,
           },
         ],
+        distance: "2.5km",
+        time: "10分钟",
       },
       community: {
         posts: [
@@ -104,7 +109,7 @@ export const useAlertStore = defineStore('alert', () => {
       description: '河流水位严重超警戒线，请立即撤离危险区域',
       type: AlertTypeEnum.FLOOD,
       level: AlertLevelEnum.HIGH,
-      createdAt: new Date().toISOString(),
+      createdAt: dayjs().format('YYYY/MM/DD HH:mm:ss'),
       shelter: {
         location: {
           latitude: 39.9042,
@@ -134,6 +139,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.6,
           },
         ],
+        distance: "2.5km",
+        time: "10分钟",
       },
       community: {
         posts: [

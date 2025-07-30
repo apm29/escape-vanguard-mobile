@@ -1,4 +1,5 @@
 import { useScriptTag } from '@vueuse/core'
+import { title } from 'node:process'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 // 声明高德地图全局变量
@@ -40,8 +41,18 @@ export const useLbsStore = defineStore('lbs', () => {
   const isMapInitialized = ref(false)
 
   // 位置相关状态
-  const userLocation = ref<Location | null>(null)
-  const nearestShelter = ref<Shelter | null>(null)
+  const userLocation = ref<Location>({
+    latitude: 24.434672,
+    longitude: 118.098038,
+  })
+  const nearestShelter = ref<Shelter>({
+    name: '逃生路线',
+    distance: 0,
+    location: {
+      latitude: 24.44611,
+      longitude: 118.098156,
+    },
+  })
   const heatmapData = ref<HeatmapPoint[]>([])
 
   // API配置
@@ -102,24 +113,42 @@ export const useLbsStore = defineStore('lbs', () => {
   async function initMap(container: HTMLDivElement) {
     if (!container)
       return
-
+    const center = [
+      (unref(userLocation).longitude + unref(nearestShelter).location.longitude) / 2,
+      (unref(userLocation).latitude + unref(nearestShelter).location.latitude) / 2,
+    ]
+    const userLngLat = new window.AMap.LngLat(unref(userLocation).longitude, unref(userLocation).latitude)
+    const shelterLngLat = new window.AMap.LngLat(unref(nearestShelter).location.longitude, unref(nearestShelter).location.latitude)
     try {
       // 创建高德地图实例
       map.value = new window.AMap.Map(container, {
-        zoom: 10,
-        center: [113.3, 23.1], // 地图中心点
+        zoom: 14,
+        center, // 地图中心点
         mapStyle: 'amap://styles/normal', // 地图样式
+        resizeEnable: true,
       })
 
       // 添加地图控件
-      map.value.addControl(new window.AMap.Scale())
-      map.value.addControl(new window.AMap.ToolBar())
+      // map.value.addControl(new window.AMap.Scale())
+      // map.value.addControl(new window.AMap.ToolBar())
       // map.value.addControl(new window.AMap.MapType())
 
       isMapInitialized.value = true
 
       // 初始化定位功能
-      await initGeolocation()
+      // await initGeolocation()
+      const marker = new window.AMap.Marker({
+        position: userLngLat,
+        offset: new window.AMap.Pixel(-13, -30),
+        title: '当前位置',
+      })
+      map.value.add(marker)
+      const shelterMarker = new window.AMap.Marker({
+        position: shelterLngLat,
+        offset: new window.AMap.Pixel(-13, -30),
+        title: '避难所',
+      })
+      map.value.add(shelterMarker)
     }
     catch (error) {
       console.error('地图初始化失败:', error)
@@ -133,7 +162,7 @@ export const useLbsStore = defineStore('lbs', () => {
       const geolocation = new window.AMap.Geolocation({
         enableHighAccuracy: true,
         timeout: 10000,
-        buttonPosition: 'RB',
+        buttonPosition: 'TL',
         buttonOffset: new window.AMap.Pixel(10, 20),
         zoomToAccuracy: true,
       })
@@ -331,6 +360,11 @@ export const useLbsStore = defineStore('lbs', () => {
                 // 使用高德地图APP或网页版进行导航
                 const url = `https://uri.amap.com/navigation?from=${userLocation.value?.longitude},${userLocation.value?.latitude},当前位置&to=${nearestShelter.value!.location.longitude},${nearestShelter.value!.location.latitude},${nearestShelter.value!.name}&mode=car&policy=1&src=mypage&coordinate=gaode&callnative=0`
                 window.open(url, '_blank')
+
+                // 使用地图组件导航
+                //https://m.amap.com/navi/?start=116.403124,39.940693&dest=116.481488,39.990464&destName=%E4%B8%80%E6%9D%A1%E9%A9%BE%E8%BD%A6%E8%B7%AF%E7%BA%BF&key=d3f5d8b3b05231fa6a11375492310e3a&jscode=%EF%BC%88%E6%82%A8%E7%9A%84%E5%AE%89%E5%85%A8%E5%AF%86%E9%92%A5%EF%BC%89&platform=mobile
+                // const url2 = `https://m.amap.com/navi/?start=${userLocation.value?.longitude},${userLocation.value?.latitude},当前位置&dest=${nearestShelter.value!.location.longitude},${nearestShelter.value!.location.latitude},${nearestShelter.value!.name}&destName=${nearestShelter.value!.name}&naviBy=car&key=${apiKey}&jscode=${securityKey}`
+                // window.open(url2, '_blank')
               }
 
               resolve(result)
