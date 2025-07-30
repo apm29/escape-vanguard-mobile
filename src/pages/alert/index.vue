@@ -36,7 +36,6 @@ function getAlertLevelClass(level: AlertLevelEnum) {
   }
 }
 
-
 // 根据警报等级获取按钮样式
 function getButtonClass(level: AlertLevelEnum) {
   switch (level) {
@@ -128,6 +127,7 @@ async function handleEvacuate() {
   }
 }
 const navigated = ref(false)
+
 // 处理路线规划按钮点击
 async function handleRoutePlanning() {
   if (!alert.value) {
@@ -138,8 +138,25 @@ async function handleRoutePlanning() {
   try {
     // 调用地图组件的导航功能
     if (mapPanelRef.value) {
-      await mapPanelRef.value.navigateToShelter()
+      await mapPanelRef.value.planRouteToShelter()
       navigated.value = true
+    }
+    else {
+      toast.error('地图组件未加载完成，请稍后重试')
+    }
+  }
+  catch (error) {
+    console.error('路线规划失败:', error)
+    toast.error('路线规划功能暂时不可用，请稍后重试')
+  }
+}
+
+// 处理开始导航按钮点击
+async function handleStartNavigation() {
+  try {
+    // 这里可以添加导航逻辑
+    if (mapPanelRef.value) {
+      await mapPanelRef.value.navigateToShelter()
     }
     else {
       toast.error('地图组件未加载完成，请稍后重试')
@@ -216,12 +233,45 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
         {{ alert.name }}与你的距离 {{ currentDistance }} {{ currentEstimatedTime }}
       </div>
     </div>
-    <button
-      v-if="!navigated"
-      class="action-btn"
-      :class="currentButtonClass"
-      @click="alert.level === AlertLevelEnum.HIGH ? handleEvacuate() : handleRoutePlanning()"
-    >
+
+    <!-- 路线选项显示区域 -->
+    <div v-if="navigated" class="route-options">
+      <button class="navigation-btn" @click="handleStartNavigation">
+        开始导航
+      </button>
+      <div class="route-cards">
+        <div class="route-card recommended">
+          <div class="route-title">
+            推荐路线
+          </div>
+          <div class="route-details">
+            <span class="distance">2.5km</span>
+            <span class="time">10mins</span>
+          </div>
+        </div>
+        <div class="route-card">
+          <div class="route-title">
+            最快路线
+          </div>
+          <div class="route-details">
+            <span class="distance">1.5km</span>
+            <span class="time">7mins</span>
+          </div>
+        </div>
+        <div class="route-card">
+          <div class="route-title">
+            特殊路线
+          </div>
+          <div class="route-details">
+            <span class="distance">2.5km</span>
+            <span class="time">15mins</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button v-if="!navigated" class="action-btn" :class="currentButtonClass"
+      @click="alert.level === AlertLevelEnum.HIGH ? handleEvacuate() : handleRoutePlanning()">
       {{ alert.level === AlertLevelEnum.HIGH ? '立即撤离' : '路线规划' }}
     </button>
   </div>
@@ -288,6 +338,7 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
   flex-grow: 1;
   position: relative;
 }
+
 .action-area {
   position: absolute;
   top: 0;
@@ -350,5 +401,77 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
 .action-btn.blue {
   background: #1976d2;
   color: white;
+}
+
+.route-options {
+  padding: 15px;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.navigation-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #d32f2f;
+  color: white;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.route-cards {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.route-card {
+  flex: 1;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.route-card.recommended {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.route-card.recommended .route-title {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.route-card.recommended .route-details {
+  color: #d32f2f;
+}
+
+.route-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.route-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.route-details .distance {
+  font-weight: bold;
+}
+
+.route-details .time {
+  color: #999;
 }
 </style>

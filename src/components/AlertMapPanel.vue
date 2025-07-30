@@ -7,6 +7,7 @@ const mapContainer = ref<HTMLDivElement | null>(null)
 
 // 暴露导航方法给父组件
 defineExpose({
+  planRouteToShelter: lbsStore.planRouteToShelter,
   navigateToShelter: lbsStore.navigateToShelter,
 })
 

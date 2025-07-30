@@ -301,7 +301,7 @@ export const useLbsStore = defineStore('lbs', () => {
   }
 
   // 导航到避难所
-  async function navigateToShelter() {
+  async function planRouteToShelter() {
     if (!userLocation.value || !nearestShelter.value) {
       return Promise.reject(new Error('用户位置或避难所位置未找到'))
     }
@@ -401,6 +401,12 @@ export const useLbsStore = defineStore('lbs', () => {
     await initGeolocation()
   }
 
+  function navigateToShelter() {
+    // 使用高德地图APP或网页版进行导航
+    const url = `https://uri.amap.com/navigation?from=${userLocation.value?.longitude},${userLocation.value?.latitude},当前位置&to=${nearestShelter.value!.location.longitude},${nearestShelter.value!.location.latitude},${nearestShelter.value!.name}&mode=car&policy=1&src=mypage&coordinate=gaode&callnative=0`
+    window.open(url, '_blank')
+  }
+
   return {
     // 状态
     map: readonly(map),
@@ -419,6 +425,7 @@ export const useLbsStore = defineStore('lbs', () => {
     searchNearestShelter,
     generateHeatmapData,
     initHeatmap,
+    planRouteToShelter,
     navigateToShelter,
     destroyMap,
     refreshLocation,
