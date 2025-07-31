@@ -177,7 +177,7 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
   <div v-if="alert" class="risk-screen" :class="currentAlertLevelClass">
     <div class="map-area">
       <div v-if="!navigated" class="action-area">
-        <h3 class="font-bold">
+        <h3 class="text-dark-400 font-bold">
           {{ getAlertLevelActionText(alert.level) }}
         </h3>
         <h4 v-html="getAlertLevelActionDescriptionText(alert.level)" />

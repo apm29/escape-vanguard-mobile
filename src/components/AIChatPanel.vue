@@ -46,7 +46,7 @@ function toggleListening() {
     // 模拟语音识别
     setTimeout(() => {
       isListening.value = false
-      addUserMessage('我想查询一下附近的餐厅')
+      addUserMessage('我需要紧急救援，水位还在上涨')
     }, 2000)
   }
 }
@@ -263,6 +263,7 @@ watch(() => props.isVisible, (visible) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: #d3d3d3;
 }
 
 .message {
@@ -298,6 +299,10 @@ watch(() => props.isVisible, (visible) => {
 .message.user .message-content {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+}
+.message.ai .message-content {
+  background: #f0f0f0;
+  color: #333;
 }
 
 .message-content p {

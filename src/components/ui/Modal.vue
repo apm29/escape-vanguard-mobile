@@ -102,7 +102,7 @@ const sizeClasses = {
         :aria-describedby="undefined"
       >
         <div v-if="title || description">
-          <DialogTitle v-if="title" class="text-lg font-semibold leading-none tracking-tight">
+          <DialogTitle v-if="title" class="text-lg text-dark-200 font-semibold leading-none tracking-tight">
             {{ title }}
           </DialogTitle>
           <DialogDescription v-if="description" class="text-muted-foreground text-sm">
