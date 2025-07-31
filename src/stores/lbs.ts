@@ -250,23 +250,82 @@ export const useLbsStore = defineStore('lbs', () => {
     if (!userLocation.value)
       return
 
-    const data: HeatmapPoint[] = []
-    const centerLng = userLocation.value.longitude
-    const centerLat = userLocation.value.latitude
+    const data: HeatmapPoint[] = [
+      {
+        lng: 118.098038,
+        lat: 24.434672,
+        count: 100,
+      },
+      {
+        lng: 118.108720,
+        lat: 24.435234,
+        count: 63,
+      },
+      {
+        lng: 118.087658,
+        lat: 24.448168,
+        count: 38,
+      },
+      {
+        lng: 118.110140,
+        lat: 24.438703,
+        count: 79,
+      },
+      {
+        lng: 118.110920,
+        lat: 24.440889,
+        count: 24,
+      },
+      {
+        lng: 118.103663,
+        lat: 24.443222,
+        count: 70,
+      },
+      {
+        lng: 118.084736,
+        lat: 24.442104,
+        count: 21,
+      },
+      {
+        lng: 118.098038,
+        lat: 24.436047,
+        count: 55,
+      },
+      {
+        lng: 118.093170,
+        lat: 24.451746,
+        count: 57,
+      },
+      {
+        lng: 118.094750,
+        lat: 24.446790,
+        count: 70,
+      },
+      {
+        lng: 118.111318,
+        lat: 24.443634,
+        count: 23,
+      },
+    ]
 
-    // 在用户位置周围生成随机的灾害热力图数据
-    for (let i = 0; i < 250; i++) {
-      // 在用户位置周围2公里范围内随机生成点
-      const randomLng = centerLng + (Math.random() - 0.5) * 0.02 // 约2公里范围
-      const randomLat = centerLat + (Math.random() - 0.5) * 0.02
-      const count = Math.floor(Math.random() * 100) + 10 // 10-110的随机强度
-
-      data.push({
-        lng: randomLng,
-        lat: randomLat,
-        count,
-      })
-    }
+    // // 在用户位置周围生成随机的灾害热力图数据
+    // // 生成中心点
+    // data.push({
+    //   lng: 118.098038,
+    //   lat: 24.434672,
+    //   count: 100,
+    // })
+    // // 再生成一些随机的热力点
+    // for (let i = 0; i < 10; i++) {
+    //   const randomLng = 118.098038 + (Math.random() - 0.5) * 0.03 // 经度随机偏移
+    //   const randomLat = 24.434672 + (Math.random() - 0.5) * 0.03 // 纬度随机偏移
+    //   const randomCount = Math.floor(Math.random() * 80) + 20 // 20~100
+    //   data.push({
+    //     lng: randomLng,
+    //     lat: randomLat,
+    //     count: randomCount,
+    //   })
+    // }
 
     heatmapData.value = data
     console.warn('生成热力图数据:', data.length, '个点')

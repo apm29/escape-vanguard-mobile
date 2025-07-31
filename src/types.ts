@@ -3,9 +3,9 @@ import type { ViteSSGContext } from 'vite-ssg'
 export type UserModule = (ctx: ViteSSGContext) => void
 
 export enum AlertLevelEnum {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
+  LOW = '低',
+  MEDIUM = '中',
+  HIGH = '高',
 }
 
 export enum AlertTypeEnum {

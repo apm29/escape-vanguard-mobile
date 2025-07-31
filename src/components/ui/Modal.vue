@@ -85,7 +85,7 @@ const sizeClasses = {
 </script>
 
 <template>
-  <DialogRoot :default-open="defaultOpen" :open="open" :disabled="disabled" @update:open="handleOpenChange">
+  <DialogRoot :modal="modal" :default-open="defaultOpen" :open="open" :disabled="disabled" @update:open="handleOpenChange">
     <DialogTrigger as-child>
       <slot name="trigger" />
     </DialogTrigger>

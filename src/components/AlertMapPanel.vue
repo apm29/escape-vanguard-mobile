@@ -22,9 +22,9 @@ onMounted(async () => {
       // 获取位置后立即搜索最近的避难所
       // await lbsStore.searchNearestShelter()
       // 生成热力图数据
-      // lbsStore.generateHeatmapData()
+      lbsStore.generateHeatmapData()
       // 初始化热力图
-      // lbsStore.initHeatmap()
+      lbsStore.initHeatmap()
     }
   }
   catch (error) {
@@ -59,7 +59,6 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
-
   </div>
 </template>
 

@@ -202,6 +202,10 @@ function getCommunityPosts() {
 
 .post-actions {
   margin-left: 8px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .action-btn {
@@ -248,7 +252,6 @@ function getCommunityPosts() {
 .image-container {
   flex: 1;
   min-width: 0;
-  aspect-ratio: 1;
   border-radius: 8px;
   overflow: hidden;
 }

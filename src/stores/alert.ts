@@ -1,7 +1,7 @@
 import type { AlertVO } from '~/types'
+import dayjs from 'dayjs'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { AlertLevelEnum, AlertTypeEnum } from '~/types'
-import dayjs from 'dayjs'
 
 export const useAlertStore = defineStore('alert', () => {
   // 初始化3个不同等级的flood警报
@@ -32,8 +32,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.2,
           },
         ],
-        distance: "2.5km",
-        time: "10分钟",
+        distance: '2.5km',
+        time: '10分钟',
       },
       community: {
         posts: [
@@ -79,8 +79,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.4,
           },
         ],
-        distance: "2.5km",
-        time: "10分钟",
+        distance: '2.5km',
+        time: '10分钟',
       },
       community: {
         posts: [
@@ -139,8 +139,8 @@ export const useAlertStore = defineStore('alert', () => {
             intensity: 0.6,
           },
         ],
-        distance: "2.5km",
-        time: "10分钟",
+        distance: '2.5km',
+        time: '10分钟',
       },
       community: {
         posts: [
@@ -155,7 +155,7 @@ export const useAlertStore = defineStore('alert', () => {
           {
             id: 5,
             title: '救援队已就位',
-            img: '/images/rescue-team.jpg',
+            img: 'https://images.unsplash.com/photo-1551194180-0d899503ba8b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
             content: '专业救援队已到达现场，请保持冷静',
             comments: 18,
             shares: 32,
@@ -201,8 +201,8 @@ export const useAlertStore = defineStore('alert', () => {
         ...alert.value,
         community: {
           ...alert.value.community,
-          posts: [...alert.value.community.posts, newPost]
-        }
+          posts: [...alert.value.community.posts, newPost],
+        },
       }
 
       // 更新store中的alert
@@ -218,7 +218,8 @@ export const useAlertStore = defineStore('alert', () => {
       // await api.addPostToAlert(alert.value.id, newPost)
 
       return newPost
-    } catch (error) {
+    }
+    catch (error) {
       console.error('添加帖子失败:', error)
       throw error
     }

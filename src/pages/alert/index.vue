@@ -105,27 +105,6 @@ const currentEstimatedTime = computed(() => {
   return getEstimatedTime()
 })
 
-// 处理立即撤离按钮点击
-async function handleEvacuate() {
-  if (!alert.value) {
-    toast.error('没有可用的警报信息')
-    return
-  }
-
-  try {
-    // 调用地图组件的导航功能
-    if (mapPanelRef.value) {
-      await mapPanelRef.value.navigateToShelter()
-    }
-    else {
-      toast.error('地图组件未加载完成，请稍后重试')
-    }
-  }
-  catch (error) {
-    console.error('导航失败:', error)
-    toast.error('导航功能暂时不可用，请稍后重试')
-  }
-}
 const navigated = ref(false)
 
 // 处理路线规划按钮点击
@@ -270,8 +249,10 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
       </div>
     </div>
 
-    <button v-if="!navigated" class="action-btn" :class="currentButtonClass"
-      @click="alert.level === AlertLevelEnum.HIGH ? handleEvacuate() : handleRoutePlanning()">
+    <button
+      v-if="!navigated" class="action-btn" :class="currentButtonClass"
+      @click="handleRoutePlanning()"
+    >
       {{ alert.level === AlertLevelEnum.HIGH ? '立即撤离' : '路线规划' }}
     </button>
   </div>
@@ -345,7 +326,7 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
   left: 0;
   width: 100%;
   height: auto;
-  z-index: 1000;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   justify-items: center;

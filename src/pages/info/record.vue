@@ -1,11 +1,91 @@
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useAlertStore } from '~/stores/alert'
+
+const router = useRouter()
+const alertStore = useAlertStore()
+
+// 响应式数据
+const postContent = ref('')
+const selectedImages = ref<string[]>([])
+const fileInput = ref<HTMLInputElement>()
+
+// 计算属性
+const canPublish = computed(() => {
+  return postContent.value.trim().length > 0 || selectedImages.value.length > 0
+})
+
+// 方法
+function handleInput() {
+  if (postContent.value.length > 500) {
+    postContent.value = postContent.value.slice(0, 500)
+  }
+}
+
+function selectImages() {
+  fileInput.value?.click()
+}
+
+function handleImageSelect(event: Event) {
+  const target = event.target as HTMLInputElement
+  const files = target.files
+
+  if (files) {
+    const remainingSlots = 9 - selectedImages.value.length
+    const filesToProcess = Array.from(files).slice(0, remainingSlots)
+
+    filesToProcess.forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        if (result) {
+          selectedImages.value.push(result)
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  target.value = ''
+}
+
+function removeImage(index: number) {
+  selectedImages.value.splice(index, 1)
+}
+
+async function goBack() {
+  router.back()
+}
+
+async function handlePublish() {
+  try {
+    const newPost = {
+      title: postContent.value.slice(0, 20) + (postContent.value.length > 20 ? '...' : ''),
+      img: selectedImages.value[0],
+      content: postContent.value,
+    }
+
+    await alertStore.addPostToCommunity(newPost)
+    router.push('/alert/community')
+  }
+  catch (error) {
+    console.error('发布失败:', error)
+  }
+}
+</script>
+
 <template>
   <div class="record-page">
     <!-- 顶部导航栏 -->
     <div class="header">
       <div class="header-left">
-        <button class="cancel-btn" @click="goBack">取消</button>
+        <button class="cancel-btn" @click="goBack">
+          取消
+        </button>
       </div>
-      <div class="header-title">发布动态</div>
+      <div class="header-title">
+        发布动态
+      </div>
       <div class="header-right">
         <button
           class="publish-btn"
@@ -29,7 +109,9 @@
           :maxlength="500"
           @input="handleInput"
         />
-        <div class="char-count">{{ postContent.length }}/500</div>
+        <div class="char-count">
+          {{ postContent.length }}/500
+        </div>
       </div>
 
       <!-- 图片上传区域 -->
@@ -40,7 +122,7 @@
             :key="index"
             class="image-item"
           >
-            <img :src="image" class="uploaded-image" />
+            <img :src="image" class="uploaded-image">
             <button class="remove-image-btn" @click="removeImage(index)">
               ×
             </button>
@@ -51,12 +133,15 @@
             class="image-upload-btn"
             @click="selectImages"
           >
-            <div class="upload-icon">+</div>
-            <div class="upload-text">添加图片</div>
+            <div class="upload-icon">
+              +
+            </div>
+            <div class="upload-text">
+              添加图片
+            </div>
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- 隐藏的文件输入 -->
@@ -67,84 +152,9 @@
       accept="image/*"
       class="hidden-input"
       @change="handleImageSelect"
-    />
+    >
   </div>
 </template>
-
-<script setup lang="ts">
-import { useAlertStore } from '~/stores/alert'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-const alertStore = useAlertStore()
-
-// 响应式数据
-const postContent = ref('')
-const selectedImages = ref<string[]>([])
-const fileInput = ref<HTMLInputElement>()
-
-// 计算属性
-const canPublish = computed(() => {
-  return postContent.value.trim().length > 0 || selectedImages.value.length > 0
-})
-
-// 方法
-const handleInput = () => {
-  if (postContent.value.length > 500) {
-    postContent.value = postContent.value.slice(0, 500)
-  }
-}
-
-const selectImages = () => {
-  fileInput.value?.click()
-}
-
-const handleImageSelect = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const files = target.files
-
-  if (files) {
-    const remainingSlots = 9 - selectedImages.value.length
-    const filesToProcess = Array.from(files).slice(0, remainingSlots)
-
-    filesToProcess.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        if (result) {
-          selectedImages.value.push(result)
-        }
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  target.value = ''
-}
-
-const removeImage = (index: number) => {
-  selectedImages.value.splice(index, 1)
-}
-
-const goBack = () => {
-  router.back()
-}
-
-const handlePublish = async () => {
-  try {
-    const newPost = {
-      title: postContent.value.slice(0, 20) + (postContent.value.length > 20 ? '...' : ''),
-      img: selectedImages.value[0],
-      content: postContent.value,
-    }
-
-    await alertStore.addPostToCommunity(newPost)
-    router.push('/alert/community')
-  } catch (error) {
-    console.error('发布失败:', error)
-  }
-}
-</script>
 
 <style scoped>
 .record-page {
@@ -166,7 +176,8 @@ const handlePublish = async () => {
   z-index: 100;
 }
 
-.header-left, .header-right {
+.header-left,
+.header-right {
   flex: 1;
 }
 

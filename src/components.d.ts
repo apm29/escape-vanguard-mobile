@@ -8,13 +8,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AIChatButton: typeof import('./components/AIChatButton.vue')['default']
+    AIChatPanel: typeof import('./components/AIChatPanel.vue')['default']
     Alert: typeof import('./components/ui/Alert.vue')['default']
     AlertMapPanel: typeof import('./components/AlertMapPanel.vue')['default']
     Button: typeof import('./components/ui/Button.vue')['default']
     Checkbox: typeof import('./components/ui/Checkbox.vue')['default']
     CheckboxExample: typeof import('./components/ui/CheckboxExample.vue')['default']
     Dropdown: typeof import('./components/ui/Dropdown.vue')['default']
-    DropdownExample: typeof import('./components/ui/DropdownExample.vue')['default']
     DropdownItem: typeof import('./components/ui/DropdownItem.vue')['default']
     ExtendedImage: typeof import('./components/ui/ExtendedImage.vue')['default']
     Modal: typeof import('./components/ui/Modal.vue')['default']

@@ -112,7 +112,9 @@ const shelters = reactive([
       <div class="info-flow">
         <!-- 地点 -->
         <div class="info-item">
-          <div class="info-icon filled" />
+          <div class="info-icon filled">
+            <div class="i-carbon:location text-sm text-white" />
+          </div>
           <div class="info-content">
             <div class="info-label">
               地点
@@ -172,11 +174,6 @@ const shelters = reactive([
             <div class="info-label">
               设施
             </div>
-            <!-- <div class="facilities-grid">
-              <div v-for="facility in ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']" :key="facility" class="facility-item">
-                {{ facility }}
-              </div>
-            </div> -->
             <div class="nearby-shelters">
               <div
                 v-for="shelter in [
@@ -194,7 +191,7 @@ const shelters = reactive([
       </div>
     </div>
 
-    <Modal v-model:open="detailOpen" title="图层" size="sm" content-class="!w-80% bg-#f3f3f3 rounded">
+    <Modal v-model:open="detailOpen" :modal="false" title="图层" size="sm" content-class="!w-80% bg-#f3f3f3 rounded">
       <h2 class="my-2 text-sm text-dark-200">
         灾难
       </h2>
@@ -426,6 +423,9 @@ const shelters = reactive([
   flex-shrink: 0;
   position: relative;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .info-icon.filled {

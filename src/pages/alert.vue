@@ -70,7 +70,7 @@ const contactOpen = ref(false)
   <div class="warning-system h-screen w-full flex flex-col">
     <div class="screen-header" :class="currentHeaderClass">
       <div class="alert-icon">
-        <div class="i-carbon:warning-alt" />
+        <div class="i-carbon:warning-alt-filled text-lg" />
       </div>
       <span class="warning">警报: {{ alert.name }}</span>
       <Dropdown
@@ -78,7 +78,7 @@ const contactOpen = ref(false)
         content-class="!bg-transparent !shadow-none !w-auto flex flex-col items-center justify-center"
       >
         <template #trigger>
-          <div class="i-carbon:overflow-menu-vertical" />
+          <div class="i-carbon:overflow-menu-vertical text-lg" />
         </template>
         <DropdownItem>
           <button class="icon-button" @click="layerOpen = true">
@@ -96,9 +96,9 @@ const contactOpen = ref(false)
           </RouterLink>
         </DropdownItem>
         <DropdownItem>
-          <div class="icon-button">
+          <a class="icon-button" href="tel:120">
             <i class="i-ic:baseline-sos" />
-          </div>
+          </a>
         </DropdownItem>
       </Dropdown>
     </div>
@@ -113,7 +113,7 @@ const contactOpen = ref(false)
     <div class="flex items-center justify-around gap-2 border-t bg-white p-3 text-gray-500">
       <RouterLink
         to="/alert/info" replace class="flex flex-col items-center gap-2 text-gray-500"
-        :class="{ active: route.path === '/alert/info' }"
+        :class="{ active: route.path === '/alert/info', [getHeaderClass(alert.level)]: true }"
       >
         <i class="i-carbon-information flex-shrink-0" />
         信息
@@ -121,7 +121,7 @@ const contactOpen = ref(false)
 
       <RouterLink
         to="/alert" replace class="flex flex-col items-center gap-2 text-gray-500"
-        :class="{ active: route.path === '/alert' }"
+        :class="{ active: route.path === '/alert', [getHeaderClass(alert.level)]: true }"
       >
         <i class="i-carbon:navaid-military-civil flex-shrink-0" />
         逃生
@@ -129,13 +129,13 @@ const contactOpen = ref(false)
 
       <RouterLink
         to="/alert/community" replace class="flex flex-col items-center gap-2 text-gray-500"
-        :class="{ active: route.path === '/alert/community' }"
+        :class="{ active: route.path === '/alert/community', [getHeaderClass(alert.level)]: true }"
       >
         <i class="i-carbon:earth-europe-africa flex-shrink-0" />
         社区
       </RouterLink>
     </div>
-    <Modal v-model:open="layerOpen" title="图层" size="sm" content-class="!w-80% bg-white rounded">
+    <Modal v-model:open="layerOpen" title="图层" size="sm" content-class="!w-80% bg-white rounded z-9999">
       <div class="flex flex-wrap items-center justify-left gap-6 text-dark-400">
         <div v-for="layer of layers" :key="layer.label" class="flex items-center gap-2">
           <label class="flex flex-col select-none items-center justify-center gap-1 px-2 text-sm text-stone-700 leading-none dark:text-white" for="airplane-mode">
@@ -209,7 +209,8 @@ const contactOpen = ref(false)
   align-items: center;
   padding: 10px 15px;
   color: white;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .screen-header.red {
@@ -230,15 +231,25 @@ const contactOpen = ref(false)
 }
 
 .active {
-  color: #d32f2f !important;
   transition: all 0.3s;
 }
 
 .active i {
-  color: #d32f2f !important;
 }
 
 .icon-button {
   @apply flex items-center justify-center text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 border;
+}
+
+.active.red {
+  color: #d32f2f;
+}
+
+.active.orange {
+  color: #f57c00;
+}
+
+.active.blue {
+  color: #1976d2;
 }
 </style>

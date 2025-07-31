@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AlertVO } from '~/types'
+import dayjs from 'dayjs'
 import { useAlertStore } from '~/stores/alert'
 import { AlertLevelEnum } from '~/types'
 
@@ -77,16 +78,6 @@ function selectAlert(alert: AlertVO) {
   alertStore.setAlert(alert)
   router.push('/alert')
 }
-
-// 格式化时间
-function formatTime(dateString: string) {
-  return new Date(dateString).toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <template>
@@ -99,10 +90,11 @@ function formatTime(dateString: string) {
 
     <!-- 警报列表 -->
     <div class="alerts-container">
-      <div v-for="alert in alerts" :key="alert.id" class="alert-card" :class="getAlertLevelClass(alert.level)"
-        @click="showAlertDetail(alert)">
+      <div
+        v-for="alert in alerts" :key="alert.id" class="alert-card" :class="getAlertLevelClass(alert.level)"
+        @click="showAlertDetail(alert)"
+      >
         <div class="alert-header">
-
           <div class="alert-info">
             <h3 class="alert-title">
               <span class="icon-wrapper" :class="getAlertLevelClass(alert.level)">
@@ -113,7 +105,7 @@ function formatTime(dateString: string) {
             <p>{{ alert.description }}</p>
           </div>
           <div class="alert-time">
-            {{ formatTime(alert.createdAt) }}
+            {{ dayjs(alert.createdAt).format('YYYY-MM-DD HH:mm:ss') }}
           </div>
         </div>
       </div>
@@ -121,10 +113,12 @@ function formatTime(dateString: string) {
 
     <!-- 紧急警报弹窗 -->
     <Teleport to="body">
-      <Transition enter-active-class="transition ease-out duration-300"
+      <Transition
+        enter-active-class="transition ease-out duration-300"
         enter-from-class="transform translate-y-full opacity-0" enter-to-class="transform translate-y-0 opacity-100"
         leave-active-class="transition ease-in duration-300" leave-from-class="transform translate-y-0 opacity-100"
-        leave-to-class="transform translate-y-full opacity-0">
+        leave-to-class="transform translate-y-full opacity-0"
+      >
         <div v-if="showAlertModal && selectedAlert" class="emergency-alert-modal">
           <div class="modal-backdrop" @click.stop="closeAlertModal()" />
           <div class="emergency-alert" :style="{ backgroundColor: getAlertBgColor(selectedAlert.level) }">
@@ -160,7 +154,7 @@ function formatTime(dateString: string) {
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">发布时间:</span>
-                  <span class="detail-value">{{ formatTime(selectedAlert.createdAt) }}</span>
+                  <span class="detail-value">{{ dayjs(selectedAlert.createdAt).format('YYYY-MM-DD HH:mm:ss') }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">避难所位置:</span>
@@ -168,6 +162,7 @@ function formatTime(dateString: string) {
                     {{ selectedAlert.shelter.location.latitude.toFixed(4) }},
                     {{ selectedAlert.shelter.location.longitude.toFixed(4) }}
                   </span>
+                  <i class="i-carbon:location" />
                 </div>
               </div>
             </div>
@@ -175,8 +170,10 @@ function formatTime(dateString: string) {
             <!-- 行动按钮 -->
             <div class="alert-action">
               <button class="action-btn" @click="selectAlert(selectedAlert)">
-                <i :class="selectedAlert.level === AlertLevelEnum.HIGH ? 'i-carbon:run' : 'i-carbon:information'"
-                  class="action-icon" />
+                <i
+                  :class="selectedAlert.level === AlertLevelEnum.HIGH ? 'i-carbon:run' : 'i-carbon:information'"
+                  class="action-icon"
+                />
                 {{ selectedAlert.level === AlertLevelEnum.HIGH ? '立即疏散' : '了解详情' }}
               </button>
             </div>
