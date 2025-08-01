@@ -14,6 +14,7 @@ useHead({
 })
 
 const alertStore = useAlertStore()
+const lbsStore = useLbsStore()
 const alert = computed(() => alertStore.alert)
 
 // 地图组件引用
@@ -106,7 +107,9 @@ const currentEstimatedTime = computed(() => {
 })
 
 const navigated = ref(false)
-
+watch(() => lbsStore.currentShelter, () => {
+  navigated.value = false
+})
 // 处理路线规划按钮点击
 async function handleRoutePlanning() {
   if (!alert.value) {
@@ -175,30 +178,30 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
 
 <template>
   <div v-if="alert" class="risk-screen" :class="currentAlertLevelClass">
-    <div class="map-area">
-      <div v-if="!navigated" class="action-area">
-        <h3 class="text-dark-400 font-bold">
-          {{ getAlertLevelActionText(alert.level) }}
-        </h3>
-        <h4 v-html="getAlertLevelActionDescriptionText(alert.level)" />
-        <p class="text-sm text-gray-500">
-          灾害类型：{{ alert.type }} | 时间：{{ alert.createdAt }}
-        </p>
-        <div class="w-full border-t" />
-        <div class="flex items-center justify-center text-gray-600">
-          <div class="h-1em w-1em rounded-full bg-blue-500" />
-          <div class="flex flex-col items-center justify-center">
-            <div class="px-8 text-sm">
-              {{ alert.type }}与你的距离
-            </div>
-            <div class="h-1 w-full bg-red-500" />
-            <div class="px-8 text-sm">
-              {{ alert.disaster.distance }} {{ alert.disaster.time }}
-            </div>
+    <div v-if="!navigated" class="action-area border-b">
+      <h3 class="text-dark-400 font-bold">
+        {{ getAlertLevelActionText(alert.level) }}
+      </h3>
+      <h4 class="text-sm" v-html="getAlertLevelActionDescriptionText(alert.level)" />
+      <p class="text-xs text-gray-500">
+        灾害类型：{{ alert.type }} | 时间：{{ alert.createdAt }}
+      </p>
+      <div class="w-full border-t" />
+      <div class="flex items-center justify-center text-gray-600">
+        <div class="h-1em w-1em rounded-full bg-blue-500" />
+        <div class="flex flex-col items-center justify-center">
+          <div class="px-8 text-xs">
+            {{ alert.type }}与你的距离
           </div>
-          <div class="i-carbon:flood" />
+          <div class="h-1 w-full bg-red-500" />
+          <div class="px-8 text-xs">
+            {{ alert.disaster.distance }} {{ alert.disaster.time }}
+          </div>
         </div>
+        <div class="i-carbon:flood" />
       </div>
+    </div>
+    <div class="map-area">
       <AlertMapPanel ref="mapPanelRef" />
     </div>
     <div v-if="!navigated" class="status-info">
@@ -321,9 +324,6 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
 }
 
 .action-area {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: auto;
   z-index: 10;
@@ -332,7 +332,7 @@ function getAlertLevelActionDescriptionText(level: AlertLevelEnum) {
   justify-items: center;
   align-items: center;
   background-color: #fff;
-  padding: 10px;
+  padding: 5px;
   gap: 4px;
 }
 

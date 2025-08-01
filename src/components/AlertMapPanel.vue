@@ -35,6 +35,7 @@ onMounted(async () => {
 onUnmounted(() => {
   // 清理地图实例
   lbsStore.destroyMap()
+  console.warn('清理地图实例')
 })
 </script>
 

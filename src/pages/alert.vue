@@ -6,14 +6,18 @@ defineOptions({
   name: 'AlertDetailPage',
 })
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 useHead({
   title: () => t('button.home'),
 })
 
 const alertStore = useAlertStore()
+const lbsStore = useLbsStore()
 const alert = computed(() => alertStore.alert)
-
+watch(() => lbsStore.currentShelter, () => {
+  router.replace('/alert/info')
+})
 // 根据警报等级获取头部样式
 function getHeaderClass(level: AlertLevelEnum) {
   switch (level) {
@@ -31,6 +35,7 @@ function getHeaderClass(level: AlertLevelEnum) {
 const currentHeaderClass = computed(() => {
   return alert.value ? getHeaderClass(alert.value.level) : 'blue'
 })
+
 const dropdownOpen = ref(false)
 
 const layerOpen = ref(false)
