@@ -14,9 +14,14 @@ useHead({
 
 const alertStore = useAlertStore()
 const lbsStore = useLbsStore()
+const infoStore = useInfoStore()
+
 const alert = computed(() => alertStore.alert)
-watch(() => lbsStore.currentShelter, () => {
-  router.replace('/alert/info')
+watch(() => lbsStore.currentShelter, (shelter) => {
+  if (shelter) {
+    infoStore.setInfoById(shelter.id, 'shelter')
+    router.replace('/alert/info')
+  }
 })
 // 根据警报等级获取头部样式
 function getHeaderClass(level: AlertLevelEnum) {
@@ -85,26 +90,68 @@ const contactOpen = ref(false)
         <template #trigger>
           <div class="i-carbon:overflow-menu-vertical text-lg" />
         </template>
-        <DropdownItem>
-          <button class="icon-button" @click="layerOpen = true">
-            <i class="i-carbon:layers" />
-          </button>
-        </DropdownItem>
-        <DropdownItem>
-          <button class="icon-button" @click="contactOpen = true">
-            <i class="i-material-symbols:group-rounded" />
-          </button>
-        </DropdownItem>
-        <DropdownItem>
-          <RouterLink to="/info/record" class="icon-button">
-            <i class="i-carbon:camera" />
-          </RouterLink>
-        </DropdownItem>
-        <DropdownItem>
-          <a class="icon-button" href="tel:120">
-            <i class="i-ic:baseline-sos" />
-          </a>
-        </DropdownItem>
+        <template #content>
+          <div v-if="route.path !== '/alert/info'">
+            <DropdownItem>
+              <button class="icon-button" @click="layerOpen = true">
+                <i class="i-carbon:layers" />
+              </button>
+            </DropdownItem>
+            <DropdownItem>
+              <button class="icon-button" @click="contactOpen = true">
+                <i class="i-material-symbols:group-rounded" />
+              </button>
+            </DropdownItem>
+            <DropdownItem>
+              <RouterLink to="/info/record" class="icon-button">
+                <i class="i-carbon:camera" />
+              </RouterLink>
+            </DropdownItem>
+            <DropdownItem>
+              <a class="icon-button" href="tel:120">
+                <i class="i-ic:baseline-sos" />
+              </a>
+            </DropdownItem>
+          </div>
+          <div v-if="route.path === '/alert/info'" class="max-w-80% rounded bg-#f3f3f3 p-2">
+            <h2 class="my-2 text-sm text-dark-200">
+              灾难
+            </h2>
+            <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
+              <div
+                v-for="disaster in infoStore.disasters" :key="disaster.name"
+                class="w-4em flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': disaster.id === infoStore.info.id }"
+                @click="infoStore.setInfo(disaster, 'disaster')"
+              >
+                <div
+                  class="flex items-center justify-center border border-gray-400 rounded-full p-1"
+                  :class="{ 'border-red-400': disaster.id === infoStore.info.id }"
+                >
+                  <i :class="disaster.icon" />
+                </div>
+                {{ disaster.name }}
+              </div>
+            </div>
+            <h2 class="my-2 text-sm text-dark-200">
+              避难场所
+            </h2>
+            <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
+              <div
+                v-for="shelter in infoStore.shelters" :key="shelter.name"
+                class="w-5em flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': shelter.id === infoStore.info.id }"
+                @click="infoStore.setInfo(shelter, 'shelter')"
+              >
+                <div
+                  class="flex items-center justify-center border border-gray-400 rounded-full p-1"
+                  :class="{ 'border-red-400': shelter.id === infoStore.info.id }"
+                >
+                  <i class="i-carbon:home" />
+                </div>
+                {{ shelter.name }}
+              </div>
+            </div>
+          </div>
+        </template>
       </Dropdown>
     </div>
 
@@ -143,7 +190,10 @@ const contactOpen = ref(false)
     <Modal v-model:open="layerOpen" title="图层" size="sm" content-class="!w-80% bg-white rounded z-9999">
       <div class="flex flex-wrap items-center justify-left gap-6 text-dark-400">
         <div v-for="layer of layers" :key="layer.label" class="flex items-center gap-2">
-          <label class="flex flex-col select-none items-center justify-center gap-1 px-2 text-sm text-stone-700 leading-none dark:text-white" for="airplane-mode">
+          <label
+            class="flex flex-col select-none items-center justify-center gap-1 px-2 text-sm text-stone-700 leading-none dark:text-white"
+            for="airplane-mode"
+          >
             <div class="h-2em w-2em flex items-center gap-2 border border-dark-200 rounded-full bg-gray-200 p-1">
               <i :class="layer.icon" />
             </div>

@@ -74,7 +74,7 @@ export const useLbsStore = defineStore('lbs', () => {
   // 多个避难所
   const shelters = ref<Shelter[]>([
     {
-      id: '城仔内里',
+      id: 'chengzineili',
       name: '城仔内里',
       distance: 2.5,
       location: {
@@ -83,7 +83,7 @@ export const useLbsStore = defineStore('lbs', () => {
       },
     },
     {
-      id: '汀溪中学',
+      id: 'tingxizhongxue',
       name: '汀溪中学',
       distance: 2.0,
       location: {
@@ -92,7 +92,7 @@ export const useLbsStore = defineStore('lbs', () => {
       },
     },
     {
-      id: '澳溪中学',
+      id: 'aoxizhongxue',
       name: '澳溪中学',
       distance: 2.5,
       location: {
@@ -101,7 +101,7 @@ export const useLbsStore = defineStore('lbs', () => {
       },
     },
     {
-      id: '双溪流公园',
+      id: 'shuangxiliu',
       name: '双溪流公园',
       distance: 1,
       location: {

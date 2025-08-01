@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Disaster, Shelter } from '~/stores/info'
 import { useAlertStore } from '~/stores/alert'
 import { AlertLevelEnum } from '~/types'
 
@@ -13,9 +14,7 @@ useHead({
 
 const alertStore = useAlertStore()
 const alert = computed(() => alertStore.alert)
-
-const detailOpen = ref(true)
-
+const infoStore = useInfoStore()
 // 格式化时间
 function formatTime(dateString: string) {
   return new Date(dateString).toLocaleString('zh-CN', {
@@ -40,67 +39,12 @@ function getStatusText(level: AlertLevelEnum) {
       return '警报'
   }
 }
-
-const disasters = reactive([
-  {
-    name: '地震',
-    description: '地震是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:earthquake',
-  },
-  {
-    name: '山火',
-    description: '山火是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:fire',
-  },
-  {
-    name: '洪涝',
-    description: '洪涝是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:flood',
-    active: true,
-  },
-  {
-    name: '台风',
-    description: '台风是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:windy',
-  },
-  {
-    name: '干旱',
-    description: '干旱是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:drought',
-  },
-  {
-    name: '人为事件',
-    description: '人为事件是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:notification',
-  },
-  {
-    name: '公共卫生',
-    description: '公共卫生是一种自然灾害，通常由地壳的突然震动引起。',
-    icon: 'i-carbon:health-cross',
-  },
-])
-
-const shelters = reactive([
-  {
-    name: '城仔内里',
-  },
-  {
-    name: '汀溪中学',
-    active: true,
-  },
-  {
-    name: '澳溪中学',
-  },
-  {
-    name: '双溪流公园',
-  },
-])
 </script>
 
 <template>
   <div v-if="alert">
     <!-- 避难场所信息主区域 -->
-    <div class="shelter-info-container" @click="detailOpen = true">
+    <div v-if="infoStore.infoType === 'shelter'" class="shelter-info-container">
       <div class="shelter-title">
         避难场所信息
       </div>
@@ -120,7 +64,7 @@ const shelters = reactive([
               地点
             </div>
             <div class="info-value">
-              汀溪中学, 同安区
+              {{ infoStore.info.location }}
             </div>
           </div>
         </div>
@@ -133,10 +77,7 @@ const shelters = reactive([
               详细信息
             </div>
             <div class="info-value">
-              厦门市同安区大岭溪北路699号
-            </div>
-            <div class="info-value">
-              电话: 0592-7155284
+              {{ (infoStore.info as Shelter).detail }}
             </div>
           </div>
         </div>
@@ -149,7 +90,7 @@ const shelters = reactive([
               距离
             </div>
             <div class="info-value">
-              距离2.5km, 预计步行时间15分钟
+              {{ (infoStore.info as Shelter).distance }}
             </div>
           </div>
         </div>
@@ -162,7 +103,7 @@ const shelters = reactive([
               容量
             </div>
             <div class="info-value">
-              可容纳2500人, 目前剩余容量1800人。
+              {{ (infoStore.info as Shelter).capacity }}
             </div>
           </div>
         </div>
@@ -174,85 +115,34 @@ const shelters = reactive([
             <div class="info-label">
               设施
             </div>
-            <div class="nearby-shelters">
-              <div
-                v-for="shelter in [
-                  { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-                  { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-                  { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-                ]" :key="shelter.name" class="shelter-marker" :class="{ highlighted: shelter.highlighted }"
-              >
-                <i class="shelter-icon">🏠</i>
-                <span>{{ shelter.name }}</span>
-              </div>
+            <div class="info-value">
+              {{ (infoStore.info as Shelter).facilities }}
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <Modal v-model:open="detailOpen" :modal="false" title="图层" size="sm" content-class="!w-80% bg-#f3f3f3 rounded">
-      <h2 class="my-2 text-sm text-dark-200">
-        灾难
-      </h2>
-      <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
-        <div v-for="disaster in disasters" :key="disaster.name" class="flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': disaster.active }">
-          <div class="flex items-center justify-center border border-gray-400 rounded-full p-1" :class="{ 'border-red-400': disaster.active }">
-            <i :class="disaster.icon" />
-          </div>
-          {{ disaster.name }}
-        </div>
-      </div>
-      <h2 class="my-2 text-sm text-dark-200">
-        避难场所
-      </h2>
-      <div class="flex flex-wrap items-center justify-start gap-2 text-xs text-gray-500">
-        <div v-for="shelter in shelters" :key="shelter.name" class="flex flex-col items-center justify-center gap-2" :class="{ 'text-red-400': shelter.active }">
-          <div class="flex items-center justify-center border border-gray-400 rounded-full p-1" :class="{ 'border-red-400': shelter.active }">
-            <i class="i-carbon:home" />
-          </div>
-          {{ shelter.name }}
-        </div>
-      </div>
-    </Modal>
-  </div>
-
-  <!-- 当没有选中警报时显示默认页面 -->
-  <div v-else>
-    <!-- 头部警报栏 -->
-    <div class="alert-header blue">
-      <div class="alert-left">
-        <i class="alert-icon">ℹ</i>
-        <span class="alert-text">暂无警报</span>
-      </div>
-      <span class="menu-dots">⋯</span>
-    </div>
-
-    <!-- 避难场所信息主区域 -->
-    <div class="shelter-info-container">
-      <div class="shelter-title">
-        避难场所信息
+    <div v-if="infoStore.infoType === 'disaster'" class="disaster-info-container">
+      <div class="disaster-title">
+        灾害信息
       </div>
       <div class="status-line">
-        状态: 安全 | {{ new Date().toLocaleString('zh-CN') }}
+        状态: {{ getStatusText(alert.level) }} | {{ formatTime(alert.createdAt) }}
       </div>
-
-      <!-- 信息流程 -->
       <div class="info-flow">
-        <!-- 地点 -->
         <div class="info-item">
-          <div class="info-icon filled" />
+          <div class="info-icon filled">
+            <div class="i-carbon:location text-sm text-white" />
+          </div>
           <div class="info-content">
             <div class="info-label">
               地点
             </div>
             <div class="info-value">
-              汀溪中学, 同安区
+              {{ (infoStore.info as Disaster).location }}
             </div>
           </div>
         </div>
-
-        <!-- 详细信息 -->
         <div class="info-item">
           <div class="info-icon" />
           <div class="info-content">
@@ -260,15 +150,10 @@ const shelters = reactive([
               详细信息
             </div>
             <div class="info-value">
-              厦门市同安区大岭溪北路699号
-            </div>
-            <div class="info-value">
-              电话: 0592-7155284
+              {{ (infoStore.info as Disaster).description }}
             </div>
           </div>
         </div>
-
-        <!-- 距离 -->
         <div class="info-item">
           <div class="info-icon" />
           <div class="info-content">
@@ -276,51 +161,41 @@ const shelters = reactive([
               距离
             </div>
             <div class="info-value">
-              距离2km, 预计步行时间20mins
+              {{ (infoStore.info as Disaster).distance }}
+            </div>
+            <div class="threat-direction-diagram">
+              <svg width="200" height="200" viewBox="0 0 200 200" class="threat-svg">
+                <!-- 同心圆 -->
+                <circle cx="100" cy="100" r="30" fill="none" stroke="#999" stroke-width="1" />
+                <circle cx="100" cy="100" r="50" fill="none" stroke="#999" stroke-width="1" />
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#999" stroke-width="1" />
+
+                <!-- 十字准星 -->
+                <line x1="100" y1="70" x2="100" y2="130" stroke="#999" stroke-width="1" />
+                <line x1="70" y1="100" x2="130" y2="100" stroke="#999" stroke-width="1" />
+
+                <!-- 中心点 -->
+                <circle cx="100" cy="100" r="3" fill="#1976d2" />
+
+                <!-- 紫色箭头（指向南方） -->
+                <circle cx="100" cy="100" r="2" fill="#9c27b0" />
+                <polygon points="100,100 95,110 105,110" fill="#9c27b0" />
+
+                <!-- 红色威胁线（指向东北方向） -->
+                <line x1="100" y1="100" x2="140" y2="60" stroke="#d32f2f" stroke-width="2" />
+                <circle cx="140" cy="60" r="8" fill="#d32f2f" fill-opacity="0.6" />
+              </svg>
             </div>
           </div>
         </div>
 
-        <!-- 容量 -->
         <div class="info-item">
           <div class="info-icon" />
           <div class="info-content">
             <div class="info-label">
-              容量
+              防范措施
             </div>
-            <div class="info-value">
-              可容纳3000人, 目前剩余容量1700人。
-            </div>
-          </div>
-        </div>
-
-        <!-- 设施 -->
-        <div class="info-item">
-          <div class="info-icon" />
-          <div class="info-content">
-            <div class="info-label">
-              设施
-            </div>
-            <div class="facilities-grid">
-              <div
-                v-for="facility in ['地震', '山火', '洪涝', '台风', '干旱', '人为事件', '公共卫生']" :key="facility"
-                class="facility-item"
-              >
-                {{ facility }}
-              </div>
-            </div>
-            <div class="nearby-shelters">
-              <div
-                v-for="shelter in [
-                  { name: '汀溪中学', type: 'school', distance: '2km', highlighted: true },
-                  { name: '澳溪中学', type: 'school', distance: '3.5km', highlighted: false },
-                  { name: '双溪流公园', type: 'park', distance: '4.2km', highlighted: false },
-                ]" :key="shelter.name" class="shelter-marker" :class="{ highlighted: shelter.highlighted }"
-              >
-                <i class="shelter-icon">🏠</i>
-                <span>{{ shelter.name }}</span>
-              </div>
-            </div>
+            <div class="info-value" v-html="(infoStore.info as Disaster).action" />
           </div>
         </div>
       </div>
@@ -362,7 +237,8 @@ const shelters = reactive([
 }
 
 /* 避难场所信息容器 */
-.shelter-info-container {
+.shelter-info-container,
+.disaster-info-container {
   background: white;
   margin: 16px;
   border-radius: 12px;
@@ -374,7 +250,8 @@ const shelters = reactive([
     repeating-linear-gradient(90deg, transparent, transparent 20px, #e0e0e0 20px, #e0e0e0 21px);
 }
 
-.shelter-title {
+.shelter-title,
+.disaster-title {
   text-align: center;
   font-size: 18px;
   font-weight: bold;
@@ -494,5 +371,19 @@ const shelters = reactive([
 
 .shelter-icon {
   font-size: 12px;
+}
+
+/* 威胁方向示意图 */
+.threat-direction-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.threat-svg {
+  max-width: 50%;
+  height: auto;
 }
 </style>
